@@ -4,6 +4,7 @@
 
 ```
 vcpkg integrate install
+vcpkg x-update-baseline --add-initial-baseline
 ```
 
 C++ dependencies are defined in `vcpkg.json`:
