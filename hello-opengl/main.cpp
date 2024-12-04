@@ -6,6 +6,35 @@
 #include <fmt/core.h>
 #include <fmt/chrono.h>
 
+static void glfw_onKey(GLFWwindow* window, int key, int scancode, int action, int mode) {
+	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+		glfwSetWindowShouldClose(window, GL_TRUE);
+	}
+}
+
+static void showFPS(GLFWwindow* window) {
+	static double previousSeconds = 0.0;
+	static int frameCount = 0;
+	double elapsedSeconds;
+	double currentSeconds = glfwGetTime();
+
+	elapsedSeconds = currentSeconds - previousSeconds;
+
+	if (elapsedSeconds > 0.25) {
+		previousSeconds = currentSeconds;
+		double fps = (double)frameCount / elapsedSeconds;
+		double msPerFrame = 1000.0 / fps;
+
+		char title[80];
+		std::snprintf(title, sizeof(title), "Hello Triangle @ fps: %.2f, ms/frame: %.2f", fps, msPerFrame);
+		glfwSetWindowTitle(window, title);
+
+		frameCount = 0;
+	}
+
+	frameCount++;
+}
+
 // Vertex Shader source code
 const char* vertexShaderSource = "#version 330 core\n"
 "layout (location = 0) in vec3 aPos;\n"
@@ -29,7 +58,7 @@ int main() {
 	//fmt::print("Time: {:%H:%M}\n", now);
 
 	glfwInit();
-	
+
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -47,6 +76,8 @@ int main() {
 		return -1;
 	}
 	glfwMakeContextCurrent(window);
+
+	glfwSetKeyCallback(window, glfw_onKey);
 
 	gladLoadGL();
 
@@ -91,6 +122,8 @@ int main() {
 
 	while (!glfwWindowShouldClose(window))
 	{
+		showFPS(window);
+
 		glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 		
