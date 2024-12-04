@@ -17,3 +17,11 @@ C++ dependencies are defined in `vcpkg.json`:
   ]
 }
 ```
+
+## Compiling
+
+```
+cd hello-opengl
+cmake -B build --preset vcpkg
+cmake --build build
+```
