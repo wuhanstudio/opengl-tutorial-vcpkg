@@ -6,6 +6,8 @@
 #include <fmt/core.h>
 #include <fmt/chrono.h>
 
+bool FULLSCREEN = true;
+
 static void glfw_onKey(GLFWwindow* window, int key, int scancode, int action, int mode) {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, GL_TRUE);
@@ -69,7 +71,13 @@ int main() {
 		0.0f, 0.5f * float(sqrt(3)) * 2 / 3, 0.0f
 	};
 
-	GLFWwindow* window = glfwCreateWindow(800, 800, "Hello", NULL, NULL);
+	GLFWwindow* window = NULL;
+	
+	if (FULLSCREEN)
+		window = glfwCreateWindow(1920, 1080, "Hello", glfwGetPrimaryMonitor(), NULL);
+	else
+		window = glfwCreateWindow(800, 800, "Hello", NULL, NULL);
+	
 	if (window == NULL) {
 		fmt::print("Failed to create a window\n");
 		glfwTerminate();
