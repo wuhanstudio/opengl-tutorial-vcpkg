@@ -6,6 +6,9 @@
 ## Install vcpkg
 
 ```
+$ sudo apt install build-essential pkg-config cmake
+$ sudo apt install libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev
+
 $ git clone https://github.com/microsoft/vcpkg.git
 $ ./bootstrap-vcpkg.sh
 $ echo 'export VCPKG_ROOT=$HOME/vcpkg' >> ~/.bashrc
