@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hello-shader", "hello-shade
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hello-triangle", "hello-triangle\hello-triangle.vcxproj", "{5E886E35-8C67-4ABD-890D-227C1FB7C056}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hello-texture", "hello-texture\hello-texture.vcxproj", "{C3318FAB-1598-46F7-8E2B-06501B14162E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -41,6 +43,14 @@ Global
 		{5E886E35-8C67-4ABD-890D-227C1FB7C056}.Release|x64.Build.0 = Release|x64
 		{5E886E35-8C67-4ABD-890D-227C1FB7C056}.Release|x86.ActiveCfg = Release|Win32
 		{5E886E35-8C67-4ABD-890D-227C1FB7C056}.Release|x86.Build.0 = Release|Win32
+		{C3318FAB-1598-46F7-8E2B-06501B14162E}.Debug|x64.ActiveCfg = Debug|x64
+		{C3318FAB-1598-46F7-8E2B-06501B14162E}.Debug|x64.Build.0 = Debug|x64
+		{C3318FAB-1598-46F7-8E2B-06501B14162E}.Debug|x86.ActiveCfg = Debug|Win32
+		{C3318FAB-1598-46F7-8E2B-06501B14162E}.Debug|x86.Build.0 = Debug|Win32
+		{C3318FAB-1598-46F7-8E2B-06501B14162E}.Release|x64.ActiveCfg = Release|x64
+		{C3318FAB-1598-46F7-8E2B-06501B14162E}.Release|x64.Build.0 = Release|x64
+		{C3318FAB-1598-46F7-8E2B-06501B14162E}.Release|x86.ActiveCfg = Release|Win32
+		{C3318FAB-1598-46F7-8E2B-06501B14162E}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
