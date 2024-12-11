@@ -226,7 +226,7 @@ void glfw_onFramebufferSize(GLFWwindow* window, int width, int height)
 // Code computes the average frames per second, and also the average time it takes
 // to render one frame.  These stats are appended to the window caption bar.
 //-----------------------------------------------------------------------------
-static void showFPS(GLFWwindow* window) {
+void showFPS(GLFWwindow* window) {
 	static double previousSeconds = 0.0;
 	static int frameCount = 0;
 	double elapsedSeconds;

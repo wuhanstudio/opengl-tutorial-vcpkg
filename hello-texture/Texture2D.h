@@ -21,8 +21,8 @@ public:
 	void bind(GLuint texUnit = 0);
 
 private:
-	Texture2D(const Texture2D& rhs) {}
-	Texture2D& operator = (const Texture2D& rhs) {}
+	Texture2D(const Texture2D& rhs);
+	Texture2D& operator= (const Texture2D& rhs) {return *this;}
 
 	GLuint mTexture;
 };

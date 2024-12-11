@@ -13,5 +13,5 @@ find_package(Stb REQUIRED)
 
 add_executable(hello-texture main.cpp ShaderProgram.cpp Texture2D.cpp)
 
-target_include_directories(main PRIVATE ${Stb_INCLUDE_DIR})
+target_include_directories(hello-texture PRIVATE ${Stb_INCLUDE_DIR})
 target_link_libraries(hello-texture PRIVATE fmt::fmt glfw glad::glad glm::glm)
