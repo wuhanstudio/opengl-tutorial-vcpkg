@@ -18,6 +18,22 @@ $ source ~/.bashrc
 $ vcpkg integrate install
 ```
 
+## Compiling
+
+```
+$ cd hello-opengl
+$ cmake -B build --preset vcpkg
+$ cmake --build build
+$ ./build/hello-opengl
+```
+
+```
+$ cd hello-triangle
+$ cmake -B build --preset vcpkg
+$ cmake --build build
+$ ./build/hello-triangle
+```
+
 ## Create new projects
 
 ```
@@ -36,20 +52,4 @@ C++ dependencies are defined in `vcpkg.json`:
     "glad"
   ]
 }
-```
-
-## Compiling
-
-```
-$ cd hello-opengl
-$ cmake -B build --preset vcpkg
-$ cmake --build build
-$ ./build/hello-opengl
-```
-
-```
-$ cd hello-triangle
-$ cmake -B build --preset vcpkg
-$ cmake --build build
-$ ./build/hello-triangle
 ```
