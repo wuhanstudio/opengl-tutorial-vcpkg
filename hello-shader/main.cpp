@@ -180,6 +180,8 @@ int main()
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
+		glBindVertexArray(0);
+
 		// Swap front and back buffers
 		glfwSwapBuffers(gWindow);
 	}
@@ -188,6 +190,8 @@ int main()
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &IBO);
+
+	shaderProgram.destroy();
 
 	glfwTerminate();
 

@@ -24,6 +24,7 @@ public:
 	// Only supports vertex and fragment (this series will only have those two)
 	bool loadShaders(const char* vsFilename, const char* fsFilename);
 	void use();
+	void destroy();
 
 	const GLuint getProgram();
 

@@ -14,7 +14,13 @@ ShaderProgram::ShaderProgram()
 
 ShaderProgram::~ShaderProgram()
 {
-	glDeleteProgram(mHandle);
+	// Don't do this
+	//glDeleteProgram(mHandle);
+}
+
+ShaderProgram::destroy() {
+	if (mHandle != 0)
+		glDeleteProgram(mHandle);
 }
 
 //-----------------------------------------------------------------------------
