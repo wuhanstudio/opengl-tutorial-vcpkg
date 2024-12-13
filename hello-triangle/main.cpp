@@ -125,6 +125,9 @@ int main() {
 
 	while (!glfwWindowShouldClose(window))
 	{
+		// Vsync - comment this out if you want to disable vertical sync
+		glfwSwapInterval(0);
+
 		showFPS(window);
 
 		glClearColor(0.07f, 0.13f, 0.17f, 1.0f);

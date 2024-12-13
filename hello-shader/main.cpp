@@ -156,6 +156,9 @@ int main()
 	// Rendering loop
 	while (!glfwWindowShouldClose(gWindow))
 	{
+		// Vsync - comment this out if you want to disable vertical sync
+		glfwSwapInterval(0);
+
 		showFPS(gWindow);
 
 		// Clear the screen

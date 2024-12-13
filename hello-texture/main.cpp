@@ -98,6 +98,9 @@ int main()
 	// Rendering loop
 	while (!glfwWindowShouldClose(gWindow))
 	{
+		// Vsync - comment this out if you want to enable vertical sync
+		glfwSwapInterval(0);
+
 		showFPS(gWindow);
 
 		// Poll for and process events
@@ -168,7 +171,6 @@ bool initOpenGL()
 		fmt::println("GLFW initialization failed");
 		return false;
 	}
-
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
