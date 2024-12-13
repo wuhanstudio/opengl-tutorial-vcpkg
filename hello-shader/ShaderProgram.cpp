@@ -18,7 +18,7 @@ ShaderProgram::~ShaderProgram()
 	//glDeleteProgram(mHandle);
 }
 
-ShaderProgram::destroy() {
+void ShaderProgram::destroy() {
 	if (mHandle != 0)
 		glDeleteProgram(mHandle);
 }

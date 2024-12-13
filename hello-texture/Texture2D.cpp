@@ -26,6 +26,12 @@ Texture2D::Texture2D()
 //-----------------------------------------------------------------------------
 Texture2D::~Texture2D()
 {
+	// Don't do this
+	// glDeleteTextures(1, &mTexture);
+}
+
+void Texture2D::destroy()
+{
 	glDeleteTextures(1, &mTexture);
 }
 

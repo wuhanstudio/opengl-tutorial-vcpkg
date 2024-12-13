@@ -148,6 +148,10 @@ int main()
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &IBO);
 
+	texture1.destroy();
+	texture2.destroy();
+	shaderProgram.destroy();
+
 	glfwTerminate();
 
 	return 0;

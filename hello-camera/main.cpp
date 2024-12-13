@@ -226,6 +226,12 @@ int main()
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 
+	texture1.destroy();
+	texture2.destroy();
+	floorTexture.destroy();
+
+	shaderProgram.destroy();
+
 	glfwTerminate();
 
 	return 0;
