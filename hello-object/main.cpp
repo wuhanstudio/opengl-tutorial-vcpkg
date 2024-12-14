@@ -154,6 +154,11 @@ int main()
 	texture[2].destroy();
 	texture[3].destroy();
 
+	mesh[0].destroy();
+	mesh[1].destroy();
+	mesh[2].destroy();
+	mesh[3].destroy();
+
 	shaderProgram.destroy();
 
 	glfwTerminate();

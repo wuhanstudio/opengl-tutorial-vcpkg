@@ -28,6 +28,13 @@ Mesh::Mesh()
 //-----------------------------------------------------------------------------
 Mesh::~Mesh()
 {
+	// Don't do this
+	//glDeleteVertexArrays(1, &mVAO);
+	//glDeleteBuffers(1, &mVBO);
+}
+
+void Mesh::destroy()
+{
 	glDeleteVertexArrays(1, &mVAO);
 	glDeleteBuffers(1, &mVBO);
 }
