@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderProgram.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{9f7bf7c8-efaa-4207-9c92-c0b51167c322}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{8161f0a1-41b1-4059-8395-e39aecca474d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{5b3069e7-7007-4f6b-afaf-4e855c7c8946}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Shaders">
+      <UniqueIdentifier>{2582491f-5c90-4eaf-98c4-5506a9a9c319}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Textures">
+      <UniqueIdentifier>{b5ffe126-008a-4d9a-8309-274f71af5e50}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ShaderProgram.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="textures\airplane.png">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="textures\airplane_512x512.png">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="textures\crate.jpg">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\basic.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="shaders\basic_part1.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="shaders\basic_part2.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+  </ItemGroup>
+</Project>

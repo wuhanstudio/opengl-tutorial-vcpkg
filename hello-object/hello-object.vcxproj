@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{CBE5555B-D6B5-4A47-985E-46C342F27D4A}</ProjectGuid>
+    <ProjectGuid>{70BF9060-4BDA-4B2A-9EFF-EBA458A80AE1}</ProjectGuid>
     <RootNamespace>helloshader</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -134,25 +134,53 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="Texture2D.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Mesh.h" />
     <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="Texture2D.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="textures\airplane.png" />
-    <Image Include="textures\airplane_512x512.png" />
-    <Image Include="textures\crate.jpg" />
-    <Image Include="textures\grid.jpg" />
-  </ItemGroup>
-  <ItemGroup>
+    <None Include="models\crate.mtl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </None>
+    <None Include="models\floor.mtl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </None>
+    <None Include="models\robot.mtl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </None>
+    <None Include="models\woodcrate.mtl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </None>
     <None Include="shaders\basic.frag" />
     <None Include="shaders\basic.vert" />
     <None Include="shaders\basic_part1.frag" />
     <None Include="shaders\basic_part2.frag" />
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="models\crate.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Object>
+    <Object Include="models\floor.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Object>
+    <Object Include="models\robot.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Object>
+    <Object Include="models\woodcrate.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Object>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="textures\crate.jpg" />
+    <Image Include="textures\robot_diffuse.jpg" />
+    <Image Include="textures\tile_floor.jpg" />
+    <Image Include="textures\woodcrate_diffuse.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -138,6 +138,17 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ShaderProgram.h" />
+    <ClInclude Include="Texture2D.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="textures\airplane.png" />
+    <Image Include="textures\airplane_512x512.png" />
+    <Image Include="textures\crate.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\basic.vert" />
+    <None Include="shaders\basic_part1.frag" />
+    <None Include="shaders\basic_part2.frag" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,0 +1,108 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderProgram.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{5492df84-d80a-49ac-ad01-cf5356ce2c73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{f5d5f2eb-c0a1-4a94-8064-6d2118020b72}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{2dee48be-87e6-4dca-b010-131a64683e9d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Models">
+      <UniqueIdentifier>{19e7093f-599a-44f0-a08d-15b1c73d7f03}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Shaders">
+      <UniqueIdentifier>{b7403dde-59b6-4d80-bd22-19c4a5d7d9bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Textures">
+      <UniqueIdentifier>{74ce2b21-046a-42b9-bf7e-f987f5f92382}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ShaderProgram.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="models\crate.mtl">
+      <Filter>Resource Files\Models</Filter>
+    </None>
+    <None Include="models\floor.mtl">
+      <Filter>Resource Files\Models</Filter>
+    </None>
+    <None Include="models\robot.mtl">
+      <Filter>Resource Files\Models</Filter>
+    </None>
+    <None Include="models\woodcrate.mtl">
+      <Filter>Resource Files\Models</Filter>
+    </None>
+    <None Include="shaders\basic.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="shaders\basic.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="shaders\basic_part1.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="shaders\basic_part2.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="models\crate.obj">
+      <Filter>Resource Files\Models</Filter>
+    </Object>
+    <Object Include="models\floor.obj">
+      <Filter>Resource Files\Models</Filter>
+    </Object>
+    <Object Include="models\robot.obj">
+      <Filter>Resource Files\Models</Filter>
+    </Object>
+    <Object Include="models\woodcrate.obj">
+      <Filter>Resource Files\Models</Filter>
+    </Object>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="textures\crate.jpg">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="textures\robot_diffuse.jpg">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="textures\tile_floor.jpg">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="textures\woodcrate_diffuse.jpg">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+  </ItemGroup>
+</Project>

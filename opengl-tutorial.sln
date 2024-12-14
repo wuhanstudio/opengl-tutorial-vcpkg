@@ -13,6 +13,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hello-texture", "hello-text
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hello-camera", "hello-camera\hello-camera.vcxproj", "{CBE5555B-D6B5-4A47-985E-46C342F27D4A}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hello-object", "hello-object\hello-object.vcxproj", "{70BF9060-4BDA-4B2A-9EFF-EBA458A80AE1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -61,6 +63,14 @@ Global
 		{CBE5555B-D6B5-4A47-985E-46C342F27D4A}.Release|x64.Build.0 = Release|x64
 		{CBE5555B-D6B5-4A47-985E-46C342F27D4A}.Release|x86.ActiveCfg = Release|Win32
 		{CBE5555B-D6B5-4A47-985E-46C342F27D4A}.Release|x86.Build.0 = Release|Win32
+		{70BF9060-4BDA-4B2A-9EFF-EBA458A80AE1}.Debug|x64.ActiveCfg = Debug|x64
+		{70BF9060-4BDA-4B2A-9EFF-EBA458A80AE1}.Debug|x64.Build.0 = Debug|x64
+		{70BF9060-4BDA-4B2A-9EFF-EBA458A80AE1}.Debug|x86.ActiveCfg = Debug|Win32
+		{70BF9060-4BDA-4B2A-9EFF-EBA458A80AE1}.Debug|x86.Build.0 = Debug|Win32
+		{70BF9060-4BDA-4B2A-9EFF-EBA458A80AE1}.Release|x64.ActiveCfg = Release|x64
+		{70BF9060-4BDA-4B2A-9EFF-EBA458A80AE1}.Release|x64.Build.0 = Release|x64
+		{70BF9060-4BDA-4B2A-9EFF-EBA458A80AE1}.Release|x86.ActiveCfg = Release|Win32
+		{70BF9060-4BDA-4B2A-9EFF-EBA458A80AE1}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
