@@ -1,0 +1,11 @@
+{
+  "dependencies": [
+    "fmt",
+    "glfw3",
+    "glad",
+    "glm",
+    "stb",
+    "tinyobjloader"
+  ],
+  "builtin-baseline": "b545373a9a536dc559dac8583467a21497a0e897"
+}
