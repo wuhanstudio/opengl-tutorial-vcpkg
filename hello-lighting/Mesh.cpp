@@ -47,6 +47,7 @@ bool Mesh::loadOBJ(const std::string& filename)
 	std::vector<unsigned int> vertexIndices, uvIndices;
 	std::vector<glm::vec3> tempVertices;
 	std::vector<glm::vec2> tempUVs;
+	std::vector<glm::vec3> tempNormals;
 
 	tinyobj::ObjReader reader;
 
@@ -84,14 +85,17 @@ bool Mesh::loadOBJ(const std::string& filename)
 				tinyobj::real_t vx = attrib.vertices[3 * size_t(idx.vertex_index) + 0];
 				tinyobj::real_t vy = attrib.vertices[3 * size_t(idx.vertex_index) + 1];
 				tinyobj::real_t vz = attrib.vertices[3 * size_t(idx.vertex_index) + 2];
-
 				glm::vec3 vertex(vx, vy, vz);
 
 				// Check if `normal_index` is zero or positive. negative = no normal data
+				glm::vec3 normal;
 				if (idx.normal_index >= 0) {
 					tinyobj::real_t nx = attrib.normals[3 * size_t(idx.normal_index) + 0];
 					tinyobj::real_t ny = attrib.normals[3 * size_t(idx.normal_index) + 1];
 					tinyobj::real_t nz = attrib.normals[3 * size_t(idx.normal_index) + 2];
+					normal.x = nx;
+					normal.y = ny;
+					normal.z = nz;
 				}
 
 				glm::vec2 uv;
@@ -105,6 +109,7 @@ bool Mesh::loadOBJ(const std::string& filename)
 
 				meshVertex.position = vertex;
 				meshVertex.texCoords = uv;
+				meshVertex.normal = normal;
 				mVertices.push_back(meshVertex);
 
 				// Optional: vertex colors
@@ -156,9 +161,13 @@ void Mesh::initBuffers()
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0);
 
-	// Vertex Texture Coords
+	// Normals attribute
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(3 * sizeof(GLfloat)));
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(3 * sizeof(GLfloat)));
+
+	// Vertex Texture Coords
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(6 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(2);
 
 	// unbind to make sure other code does not change it somewhere else
 	glBindVertexArray(0);

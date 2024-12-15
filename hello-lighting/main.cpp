@@ -61,7 +61,11 @@ int main()
 
 	// Load meshes and textures
 	ShaderProgram shaderProgram;
+
+	// Light shader
 	shaderProgram.loadShaders("shaders/lighting_phong_materials.vert", "shaders/lighting_phong_materials.frag");
+	//shaderProgram.loadShaders("shaders/lighting_phong.vert", "shaders/lighting_phong.frag");
+	//shaderProgram.loadShaders("shaders/lighting_blinn-phong.vert", "shaders/lighting_blinn-phong.frag");
 
 	ShaderProgram lightShader;
 	lightShader.loadShaders("shaders/bulb.vert", "shaders/bulb.frag");
@@ -166,6 +170,13 @@ int main()
 		shaderProgram.setUniform("light.diffuse", lightColor);
 		shaderProgram.setUniform("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
 
+	    // Simple light
+		//shaderProgram.setUniform("view", view);
+		//shaderProgram.setUniform("projection", projection);
+		//shaderProgram.setUniform("viewPos", viewPos);
+		//shaderProgram.setUniform("lightPos", lightPos);
+		//shaderProgram.setUniform("lightColor", lightColor);
+
 		// Render the scene
 		for (int i = 0; i < numModels; i++)
 		{
@@ -202,11 +213,15 @@ int main()
 	texture[1].destroy();
 	texture[2].destroy();
 	texture[3].destroy();
+	texture[4].destroy();
+	texture[5].destroy();
 
 	mesh[0].destroy();
 	mesh[1].destroy();
 	mesh[2].destroy();
 	mesh[3].destroy();
+	mesh[4].destroy();
+	mesh[5].destroy();
 
 	shaderProgram.destroy();
 
