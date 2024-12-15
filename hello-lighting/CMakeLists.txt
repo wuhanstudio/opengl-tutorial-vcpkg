@@ -11,7 +11,7 @@ find_package(glfw3 CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
 find_package(Stb REQUIRED)
 
-add_executable(hello-lighting main.cpp ShaderProgram.cpp Texture2D.cpp Camera.cpp)
+add_executable(hello-lighting main.cpp ShaderProgram.cpp Texture2D.cpp Camera.cpp Mesh.cpp)
 
 target_include_directories(hello-lighting PRIVATE ${Stb_INCLUDE_DIR})
-target_link_libraries(hello-object PRIVATE fmt::fmt glfw glad::glad glm::glm)
+target_link_libraries(hello-lighting PRIVATE fmt::fmt glfw glad::glad glm::glm)
