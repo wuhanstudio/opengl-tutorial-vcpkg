@@ -63,9 +63,8 @@ int main()
 	ShaderProgram shaderProgram;
 
 	// Light shader
-	shaderProgram.loadShaders("shaders/lighting_phong_materials.vert", "shaders/lighting_phong_materials.frag");
 	//shaderProgram.loadShaders("shaders/lighting_phong.vert", "shaders/lighting_phong.frag");
-	//shaderProgram.loadShaders("shaders/lighting_blinn-phong.vert", "shaders/lighting_blinn-phong.frag");
+	shaderProgram.loadShaders("shaders/lighting_blinn-phong.vert", "shaders/lighting_blinn-phong.frag");
 
 	ShaderProgram lightShader;
 	lightShader.loadShaders("shaders/bulb.vert", "shaders/bulb.frag");
@@ -161,21 +160,12 @@ int main()
 		// on the currently active shader program.
 		shaderProgram.use();
 
-		// Simple light
+	    // Simple light
 		shaderProgram.setUniform("view", view);
 		shaderProgram.setUniform("projection", projection);
 		shaderProgram.setUniform("viewPos", viewPos);
-		shaderProgram.setUniform("light.position", lightPos);
-		shaderProgram.setUniform("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
-		shaderProgram.setUniform("light.diffuse", lightColor);
-		shaderProgram.setUniform("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
-
-	    // Simple light
-		//shaderProgram.setUniform("view", view);
-		//shaderProgram.setUniform("projection", projection);
-		//shaderProgram.setUniform("viewPos", viewPos);
-		//shaderProgram.setUniform("lightPos", lightPos);
-		//shaderProgram.setUniform("lightColor", lightColor);
+		shaderProgram.setUniform("lightPos", lightPos);
+		shaderProgram.setUniform("lightColor", lightColor);
 
 		// Render the scene
 		for (int i = 0; i < numModels; i++)
