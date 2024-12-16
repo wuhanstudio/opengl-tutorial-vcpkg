@@ -1,0 +1,210 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Resource Files\Models">
+      <UniqueIdentifier>{1c4c5d7a-f950-4902-b03f-dcce2c086a82}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Shaders">
+      <UniqueIdentifier>{a32a06f2-3d12-4a21-89eb-9638eec7351a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Textures">
+      <UniqueIdentifier>{aa7124b8-e3b5-4a05-b597-e6f53b6d93c4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderProgram.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_impl_glfw.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_impl_opengl3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderProgram.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui_impl_glfw.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui_impl_opengl3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui_impl_opengl3_loader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="models\barrel.mtl">
+      <Filter>Resource Files\Models</Filter>
+    </None>
+    <None Include="models\bowling_pin.mtl">
+      <Filter>Resource Files\Models</Filter>
+    </None>
+    <None Include="models\bunny.mtl">
+      <Filter>Resource Files\Models</Filter>
+    </None>
+    <None Include="models\crate.mtl">
+      <Filter>Resource Files\Models</Filter>
+    </None>
+    <None Include="models\floor.mtl">
+      <Filter>Resource Files\Models</Filter>
+    </None>
+    <None Include="models\lampPost.mtl">
+      <Filter>Resource Files\Models</Filter>
+    </None>
+    <None Include="models\light.mtl">
+      <Filter>Resource Files\Models</Filter>
+    </None>
+    <None Include="models\robot.mtl">
+      <Filter>Resource Files\Models</Filter>
+    </None>
+    <None Include="models\woodcrate.mtl">
+      <Filter>Resource Files\Models</Filter>
+    </None>
+    <None Include="shaders\bulb.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="shaders\bulb.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="shaders\lighting_blinn-phong.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="shaders\lighting_blinn-phong.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="shaders\lighting_dir.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="shaders\lighting_dir.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="shaders\lighting_dir_point_spot.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="shaders\lighting_dir_point_spot.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="shaders\lighting_phong.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="shaders\lighting_phong.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="shaders\lighting_phong_materials.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="shaders\lighting_phong_materials.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="shaders\lighting_point.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="shaders\lighting_point.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="shaders\lighting_spot.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="shaders\lighting_spot.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="models\barrel.obj">
+      <Filter>Resource Files\Models</Filter>
+    </Object>
+    <Object Include="models\bowling_pin.obj">
+      <Filter>Resource Files\Models</Filter>
+    </Object>
+    <Object Include="models\bunny.obj">
+      <Filter>Resource Files\Models</Filter>
+    </Object>
+    <Object Include="models\crate.obj">
+      <Filter>Resource Files\Models</Filter>
+    </Object>
+    <Object Include="models\floor.obj">
+      <Filter>Resource Files\Models</Filter>
+    </Object>
+    <Object Include="models\lampPost.obj">
+      <Filter>Resource Files\Models</Filter>
+    </Object>
+    <Object Include="models\light.obj">
+      <Filter>Resource Files\Models</Filter>
+    </Object>
+    <Object Include="models\robot.obj">
+      <Filter>Resource Files\Models</Filter>
+    </Object>
+    <Object Include="models\woodcrate.obj">
+      <Filter>Resource Files\Models</Filter>
+    </Object>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="textures\AMF.tga">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="textures\barrel_diffuse.png">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="textures\barrel_spec.png">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="textures\bunny_diffuse.jpg">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="textures\crate.jpg">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="textures\lamp_post_diffuse.png">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="textures\light_diffuse.jpg">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="textures\robot_diffuse.jpg">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="textures\tile_floor.jpg">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="textures\woodcrate_diffuse.jpg">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+  </ItemGroup>
+</Project>
