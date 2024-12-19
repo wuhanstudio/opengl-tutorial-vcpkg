@@ -27,7 +27,7 @@
 GLFWwindow* gWindow = NULL;
 bool gWireframe = false;
 
-const char* APP_TITLE = "Introduction to Modern OpenGL - Textures";
+const char* APP_TITLE = "Introduction to Modern OpenGL - Objects";
 const int gWindowWidth = 800;
 const int gWindowHeight = 600;
 

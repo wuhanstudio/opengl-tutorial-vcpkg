@@ -1,10 +1,8 @@
 #include <iostream>
+#include <fmt/core.h>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-
-#include <fmt/core.h>
-#include <fmt/chrono.h>
 
 bool FULLSCREEN = false;
 

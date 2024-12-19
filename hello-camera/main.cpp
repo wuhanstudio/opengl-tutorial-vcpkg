@@ -1,9 +1,5 @@
 //-----------------------------------------------------------------------------
-// Textures_2.cpp by Steve Jones 
 // Copyright (c) 2015-2019 Game Institute. All Rights Reserved.
-//
-// - Add another texture
-// - fragment shader blending using GLSL mix()
 //-----------------------------------------------------------------------------
 #include <iostream>
 #include <sstream>
