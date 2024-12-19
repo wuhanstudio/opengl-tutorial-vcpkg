@@ -1,5 +1,5 @@
-[Modern OpenGL Tutorial](#modern-opengl-tutorial)
-
+<!-- TOC start (generated with https://github.com/derlin/bitdowntoc) -->
+- [Modern OpenGL Tutorial](#modern-opengl-tutorial)
   * [Install vcpkg](#install-vcpkg)
   * [01 Hello OpenGL](#01-hello-opengl)
   * [02 Hello Triangle](#02-hello-triangle)
