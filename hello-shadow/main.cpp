@@ -22,6 +22,8 @@
 #include "Texture2D.h"
 #include "Camera.h"
 #include "Mesh.h"
+#include "Skybox.h"
+
 #include <glm/gtc/type_ptr.hpp>
 
 // Global Variables
@@ -127,14 +129,32 @@ int main()
 		SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
 	glDrawBuffer(GL_NONE);
 	glReadBuffer(GL_NONE);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	// Skybox
+	ShaderProgram skyboxShader;
+	skyboxShader.loadShaders("shaders/skybox.vert", "shaders/skybox.frag");
+
+	skyboxShader.use();
+	skyboxShader.setUniform("skybox", 0);
+
+	Skybox skybox({
+		"textures/skybox/right.jpg",
+		"textures/skybox/left.jpg",
+		"textures/skybox/top.jpg",
+		"textures/skybox/bottom.jpg",
+		"textures/skybox/front.jpg",
+		"textures/skybox/back.jpg"
+		});
 
 	double lastTime = glfwGetTime();
 	float angle = 0.0f;
@@ -266,6 +286,8 @@ int main()
 		lightShader.setUniform("projection", projection);
 		lightMesh.draw();
 
+		skybox.render(skyboxShader, view, projection);
+
 		// Swap front and back buffers
 		glfwSwapBuffers(gWindow);
 
@@ -287,6 +309,11 @@ int main()
 	mesh[5].destroy();
 
 	shaderProgram.destroy();
+	shadowShader.destroy();
+	skybox.destroy();
+
+	glDeleteFramebuffers(1, &depthMapFBO);
+	glDeleteTextures(1, &depthMap);	
 
 	glfwTerminate();
 

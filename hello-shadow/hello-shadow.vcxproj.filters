@@ -16,6 +16,9 @@
     <Filter Include="Resource Files\Shaders">
       <UniqueIdentifier>{565aede9-d77e-49f0-85c4-8f4d0bc1f74f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Textures">
+      <UniqueIdentifier>{004cfe55-e982-4e03-ad49-b5cda0ba4d45}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp">
@@ -33,6 +36,9 @@
     <ClCompile Include="Texture2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Skybox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -45,6 +51,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Texture2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Skybox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -67,17 +76,49 @@
     <None Include="shaders\lighting_phong.vert">
       <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="quat.frag">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="quad.vert">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
     <None Include="shaders\shadow.frag">
       <Filter>Resource Files\Shaders</Filter>
     </None>
     <None Include="shaders\shadow.vert">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="shaders\skybox.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="shaders\skybox.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="textures\AMF.tga">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="textures\barrel_diffuse.png">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="textures\barrel_spec.png">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="textures\bunny_diffuse.jpg">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="textures\crate.jpg">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="textures\lamp_post_diffuse.png">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="textures\light_diffuse.jpg">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="textures\robot_diffuse.jpg">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="textures\tile_floor.jpg">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="textures\woodcrate_diffuse.jpg">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
   </ItemGroup>
 </Project>
