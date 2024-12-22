@@ -29,8 +29,20 @@
 
 const char* glsl_version = "#version 150";
 
-// Global Variables
+// // Set to true to enable fullscreen
+bool FULLSCREEN = true;
+
 GLFWwindow* gWindow = NULL;
+const char* APP_TITLE = "Introduction to Modern OpenGL - Hello ImGUI";
+
+// Window dimensions
+const int gWindowWidth = 800;
+const int gWindowHeight = 600;
+
+// Fullscreen dimensions
+const int gWindowWidthFull = 1920;
+const int gWindowHeightFull = 1200;
+
 bool gWireframe = false;
 
 // Camera orientation
@@ -39,10 +51,6 @@ double lastMouseX, lastMouseY;
 double lastTime = glfwGetTime();
 double deltaTime = 0.0;
 bool draging = false;
-
-const char* APP_TITLE = "Introduction to Modern OpenGL - Textures";
-const int gWindowWidth = 800;
-const int gWindowHeight = 600;
 
 const std::string texture1Filename = "textures/crate.jpg";
 const std::string texture2Filename = "textures/airplane.png";
@@ -230,7 +238,12 @@ int main()
 		ImGui::Render();
 		int display_w, display_h;
 		glfwGetFramebufferSize(gWindow, &display_w, &display_h);
-		glViewport(0, 0, display_w, display_h);
+
+		// reset viewport
+		if (FULLSCREEN)
+			glViewport(0, 0, gWindowWidthFull, gWindowHeightFull);
+		else
+			glViewport(0, 0, gWindowWidth, gWindowHeight);
 
 		io.MouseDrawCursor = true;
 		if (draging && (!io.WantCaptureMouse) ) {
@@ -380,8 +393,12 @@ bool initOpenGL()
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);	// forward compatible with newer versions of OpenGL as they become available but not backward compatible (it will not run on devices that do not support OpenGL 3.3
 
-	// Create an OpenGL 3.3 core, forward compatible context window
-	gWindow = glfwCreateWindow(gWindowWidth, gWindowHeight, APP_TITLE, NULL, NULL);
+	// Create a window
+	if (FULLSCREEN)
+		gWindow = glfwCreateWindow(gWindowWidthFull, gWindowHeightFull, APP_TITLE, glfwGetPrimaryMonitor(), NULL);
+	else
+		gWindow = glfwCreateWindow(gWindowWidth, gWindowHeight, APP_TITLE, NULL, NULL);
+
 	if (gWindow == NULL)
 	{
 		fmt::println("Failed to create GLFW window");
@@ -402,18 +419,12 @@ bool initOpenGL()
 
 	// Hides and grabs cursor, unlimited movement
 	glfwSetInputMode(gWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-	glfwSetCursorPos(gWindow, gWindowWidth / 2.0, gWindowHeight / 2.0);
+	if (FULLSCREEN)
+		glfwSetCursorPos(gWindow, gWindowWidthFull / 2.0, gWindowHeightFull / 2.0);
+	else
+		glfwSetCursorPos(gWindow, gWindowWidth / 2.0, gWindowHeight / 2.0);
 
 	glClearColor(0.23f, 0.38f, 0.47f, 1.0f);
-
-	// Rendering
-	//ImGui::Render();
-	//int display_w, display_h;
-	//glfwGetFramebufferSize(gWindow, &display_w, &display_h);
-	//glViewport(0, 0, display_w, display_h);
-
-	// Define the viewport dimensions
-	//glViewport(0, 0, gWindowWidth, gWindowHeight);
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -471,9 +482,6 @@ void update(double elapsedTime)
 
 	// Rotate the camera the difference in mouse distance from the center screen.  Multiply this delta by a speed scaler
 	fpsCamera.rotate((float)(lastMouseX - mouseX) * MOUSE_SENSITIVITY, (float)(lastMouseY - mouseY) * MOUSE_SENSITIVITY);
-
-	// Clamp mouse cursor to center of screen
-	//glfwSetCursorPos(gWindow, gWindowWidth / 2.0, gWindowHeight / 2.0);
 
 	// Camera FPS movement
 
