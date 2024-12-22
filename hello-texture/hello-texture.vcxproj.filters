@@ -51,10 +51,7 @@
     <None Include="shaders\basic.vert">
       <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="shaders\basic_part1.frag">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="shaders\basic_part2.frag">
+    <None Include="shaders\basic.frag">
       <Filter>Resource Files\Shaders</Filter>
     </None>
   </ItemGroup>

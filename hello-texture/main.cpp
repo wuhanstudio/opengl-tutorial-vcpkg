@@ -1,10 +1,3 @@
-//-----------------------------------------------------------------------------
-// Textures_2.cpp by Steve Jones 
-// Copyright (c) 2015-2019 Game Institute. All Rights Reserved.
-//
-// - Add another texture
-// - fragment shader blending using GLSL mix()
-//-----------------------------------------------------------------------------
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -18,13 +11,22 @@
 #include "ShaderProgram.h"
 #include "Texture2D.h"
 
-// Global Variables
-GLFWwindow* gWindow = NULL;
-bool gWireframe = false;
+// Set to true to enable fullscreen
+bool FULLSCREEN = false;
 
-const char* APP_TITLE = "Introduction to Modern OpenGL - Textures";
+GLFWwindow* gWindow = NULL;
+const char* APP_TITLE = "Introduction to Modern OpenGL - Hello Texture";
+
+// Window dimensions
 const int gWindowWidth = 800;
 const int gWindowHeight = 600;
+
+// Fullscreen dimensions
+const int gWindowWidthFull = 1920;
+const int gWindowHeightFull = 1200;
+
+bool gWireframe = false;
+
 const std::string texture1Filename = "textures/crate.jpg";
 const std::string texture2Filename = "textures/airplane.png";
 
@@ -34,9 +36,6 @@ void glfw_onFramebufferSize(GLFWwindow* window, int width, int height);
 void showFPS(GLFWwindow* window);
 bool initOpenGL();
 
-//-----------------------------------------------------------------------------
-// Main Application Entry Point
-//-----------------------------------------------------------------------------
 int main()
 {
 	if (!initOpenGL())
@@ -46,9 +45,8 @@ int main()
 	}
 
 	// 1. Set up an array of vertices for a quad (2 triangls) with an index buffer data
-	//   (What is a vertex?)
 	GLfloat vertices[] = {
-		// position			 // tex coords
+		// position			 // texture coords
 		-0.5f,  0.5f, 0.0f,	 0.0f, 1.0f,		// Top left
 		 0.5f,  0.5f, 0.0f,	 1.0f, 1.0f,		// Top right
 		 0.5f, -0.5f, 0.0f,	 1.0f, 0.0f,		// Bottom right
@@ -65,7 +63,7 @@ int main()
 
 	glGenVertexArrays(1, &VAO);				// Tell OpenGL to create new Vertex Array Object
 	glGenBuffers(1, &VBO);					// Generate an empty vertex buffer on the GPU
-	glGenBuffers(1, &IBO);	// Create buffer space on the GPU for the index buffer
+	glGenBuffers(1, &IBO);					// Create buffer space on the GPU for the index buffer
 
 	glBindVertexArray(VAO);					// Make it the current one
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);		// "bind" or set as the current buffer we are working with
@@ -87,7 +85,7 @@ int main()
 	glBindVertexArray(0);					// unbind to make sure other code doesn't change it
 
 	ShaderProgram shaderProgram;
-	shaderProgram.loadShaders("shaders/basic.vert", "shaders/basic_part2.frag");
+	shaderProgram.loadShaders("shaders/basic.vert", "shaders/basic.frag");
 
 	Texture2D texture1;
 	texture1.loadTexture(texture1Filename);
@@ -103,9 +101,6 @@ int main()
 
 		showFPS(gWindow);
 
-		// Poll for and process events
-		glfwPollEvents();
-
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT);
 
@@ -118,25 +113,11 @@ int main()
 		// default texture unit of 0 for the first texture so if you only have one texture sampler in the fragment
 		// shader then you do not need to explicitly set the sampler by calling glUniform1i.
 
-		// --------------- Method 1 For Setting Texture Samplers -------------------------
-		// #1 Method for setting uniform samplers
+		// Ssetting uniform samplers
 		texture1.bind(0);
 		texture2.bind(1);
 		glUniform1i(glGetUniformLocation(shaderProgram.getProgram(), "texSampler1"), 0);
 		glUniform1i(glGetUniformLocation(shaderProgram.getProgram(), "texSampler2"), 1);
-		//--------------------------------------------------------------------------------
-
-
-		// #2 Method for setting uniform samplers, basic_part2.frag shader changes:
-		// Uncomment these lines and comment the 2 glUniform1i() calls in Method #1 above to test out the
-		// second method of setting texture samplers.
-
-		// --------------- Method 2 For Setting Texture Samplers -------------------------
-		// layout (binding = 0) uniform sampler2D texSampler1;
-		// layout (binding = 1) uniform sampler2D texSampler2;
-		//texture1.bind(0);
-		//texture2.bind(1);
-		//--------------------------------------------------------------------------------
 
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -144,6 +125,7 @@ int main()
 
 		// Swap front and back buffers
 		glfwSwapBuffers(gWindow);
+		glfwPollEvents();
 	}
 
 	// Clean up
@@ -160,9 +142,6 @@ int main()
 	return 0;
 }
 
-//-----------------------------------------------------------------------------
-// Initialize GLFW and OpenGL
-//-----------------------------------------------------------------------------
 bool initOpenGL()
 {
 	// Intialize GLFW 
@@ -171,13 +150,19 @@ bool initOpenGL()
 		fmt::println("GLFW initialization failed");
 		return false;
 	}
+
+	// Set the OpenGL version
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);	// forward compatible with newer versions of OpenGL as they become available but not backward compatible (it will not run on devices that do not support OpenGL 3.3
 
-	// Create an OpenGL 3.3 core, forward compatible context window
-	gWindow = glfwCreateWindow(gWindowWidth, gWindowHeight, APP_TITLE, NULL, NULL);
+	// Create a window
+	if (FULLSCREEN)
+		gWindow = glfwCreateWindow(gWindowWidthFull, gWindowHeightFull, APP_TITLE, glfwGetPrimaryMonitor(), NULL);
+	else
+		gWindow = glfwCreateWindow(gWindowWidth, gWindowHeight, APP_TITLE, NULL, NULL);
+
 	if (gWindow == NULL)
 	{
 		fmt::println("Failed to create GLFW window");
@@ -196,21 +181,22 @@ bool initOpenGL()
 
 	glClearColor(0.23f, 0.38f, 0.47f, 1.0f);
 
-	// Define the viewport dimensions
-	glViewport(0, 0, gWindowWidth, gWindowHeight);
+	if (FULLSCREEN)
+		glViewport(0, 0, gWindowWidthFull, gWindowHeightFull);
+	else
+		glViewport(0, 0, gWindowWidth, gWindowHeight);
 
 	return true;
 }
 
-//-----------------------------------------------------------------------------
-// Is called whenever a key is pressed/released via GLFW
-//-----------------------------------------------------------------------------
+// Press ESC to close the window
+// Press 1 to toggle wireframe mode
 void glfw_onKey(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GL_TRUE);
 
-	if (key == GLFW_KEY_W && action == GLFW_PRESS)
+	if (key == GLFW_KEY_1 && action == GLFW_PRESS)
 	{
 		gWireframe = !gWireframe;
 		if (gWireframe)
@@ -220,18 +206,12 @@ void glfw_onKey(GLFWwindow* window, int key, int scancode, int action, int mode)
 	}
 }
 
-//-----------------------------------------------------------------------------
 // Is called when the window is resized
-//-----------------------------------------------------------------------------
 void glfw_onFramebufferSize(GLFWwindow* window, int width, int height)
 {
 	glViewport(0, 0, width, height);
 }
 
-//-----------------------------------------------------------------------------
-// Code computes the average frames per second, and also the average time it takes
-// to render one frame.  These stats are appended to the window caption bar.
-//-----------------------------------------------------------------------------
 void showFPS(GLFWwindow* window) {
 	static double previousSeconds = 0.0;
 	static int frameCount = 0;
