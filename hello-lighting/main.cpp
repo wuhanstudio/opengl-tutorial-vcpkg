@@ -36,10 +36,6 @@ const int gWindowHeightFull = 1200;
 
 bool gWireframe = false;
 
-const std::string texture1Filename = "textures/crate.jpg";
-const std::string texture2Filename = "textures/airplane.png";
-const std::string gridImage = "textures/grid.jpg";
-
 FPSCamera fpsCamera(glm::vec3(0.0f, 5.0f, 20.0f), -180, -10);
 const double ZOOM_SENSITIVITY = -3.0;
 const float MOVE_SPEED = 5.0; // units per second

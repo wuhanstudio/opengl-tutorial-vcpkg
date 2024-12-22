@@ -1,9 +1,5 @@
 //-----------------------------------------------------------------------------
-// Textures_2.cpp by Steve Jones 
 // Copyright (c) 2015-2019 Game Institute. All Rights Reserved.
-//
-// - Add another texture
-// - fragment shader blending using GLSL mix()
 //-----------------------------------------------------------------------------
 #include <iostream>
 #include <sstream>
@@ -26,17 +22,21 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
-// Global Variables
-GLFWwindow* gWindow = NULL;
-bool gWireframe = false;
+// Set to true to enable fullscreen
+bool FULLSCREEN = false;
 
-const char* APP_TITLE = "Introduction to Modern OpenGL - Textures";
+GLFWwindow* gWindow = NULL;
+const char* APP_TITLE = "Introduction to Modern OpenGL - Hello Lighting";
+
+// Window dimensions
 const int gWindowWidth = 800;
 const int gWindowHeight = 600;
 
-const std::string texture1Filename = "textures/crate.jpg";
-const std::string texture2Filename = "textures/airplane.png";
-const std::string gridImage = "textures/grid.jpg";
+// Fullscreen dimensions
+const int gWindowWidthFull = 1920;
+const int gWindowHeightFull = 1200;
+
+bool gWireframe = false;
 
 FPSCamera fpsCamera(glm::vec3(0.0f, 5.0f, 20.0f), -180, -10);
 const double ZOOM_SENSITIVITY = -3.0;
@@ -238,7 +238,11 @@ int main()
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 		// reset viewport
-		glViewport(0, 0, gWindowWidth, gWindowHeight);
+		if (FULLSCREEN)
+			glViewport(0, 0, gWindowWidthFull, gWindowHeightFull);
+		else
+			glViewport(0, 0, gWindowWidth, gWindowHeight);
+
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Render the scene
@@ -269,6 +273,7 @@ int main()
 
 			texture[i].bind(0);		// set the texture before drawing.
 	
+			// Render the shadow
 			glActiveTexture(GL_TEXTURE0 + 2);
 			glBindTexture(GL_TEXTURE_2D, depthMap);
 			shaderProgram.setUniform("shadowMap", 2);
@@ -332,13 +337,18 @@ bool initOpenGL()
 		return false;
 	}
 
+	// Set the OpenGL version
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);	// forward compatible with newer versions of OpenGL as they become available but not backward compatible (it will not run on devices that do not support OpenGL 3.3
 
-	// Create an OpenGL 3.3 core, forward compatible context window
-	gWindow = glfwCreateWindow(gWindowWidth, gWindowHeight, APP_TITLE, NULL, NULL);
+	// Create a window
+	if (FULLSCREEN)
+		gWindow = glfwCreateWindow(gWindowWidthFull, gWindowHeightFull, APP_TITLE, glfwGetPrimaryMonitor(), NULL);
+	else
+		gWindow = glfwCreateWindow(gWindowWidth, gWindowHeight, APP_TITLE, NULL, NULL);
+
 	if (gWindow == NULL)
 	{
 		fmt::println("Failed to create GLFW window");
@@ -362,8 +372,11 @@ bool initOpenGL()
 
 	glClearColor(0.23f, 0.38f, 0.47f, 1.0f);
 
-	// Define the viewport dimensions
-	glViewport(0, 0, gWindowWidth, gWindowHeight);
+	if (FULLSCREEN)
+		glViewport(0, 0, gWindowWidthFull, gWindowHeightFull);
+	else
+		glViewport(0, 0, gWindowWidth, gWindowHeight);
+
 	glEnable(GL_DEPTH_TEST);
 
 	return true;

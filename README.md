@@ -325,7 +325,7 @@ $ ./build/hello-skybox
 
 ![](docs/hello-skybox.png)
 
-Draw the skybox
+Draw the skybox:
 
 ```
 // skybox cube
@@ -577,7 +577,7 @@ void main()
 
 ## 09 Hello Shadow
 
-
+This example adds shadow to the scene.
 
 ```
 $ cd hello-shadow
@@ -586,13 +586,143 @@ $ cmake --build build
 $ ./build/hello-shadow
 ```
 
+![](docs/hello-shadow.gif)
 
+First, we generate a framebuffer to store the depth information:
+
+```
+// Shadow
+GLuint depthMapFBO;
+glGenFramebuffers(1, &depthMapFBO);
+
+const unsigned int SHADOW_WIDTH = 2048, SHADOW_HEIGHT = 2048;
+
+GLuint depthMap;
+glGenTextures(1, &depthMap);
+glBindTexture(GL_TEXTURE_2D, depthMap);
+glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
+    SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+
+glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+glDrawBuffer(GL_NONE);
+glReadBuffer(GL_NONE);
+glBindFramebuffer(GL_FRAMEBUFFER, 0);
+```
+
+In the first pass, we render the depth info of the scene to the framebuffer:
+
+```
+// Render the scene to the depth buffer (shadow map)
+shadowShader.use();
+shadowShader.setUniform("lightSpaceMatrix", lightSpaceMatrix);
+
+glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+glClear(GL_DEPTH_BUFFER_BIT);
+
+// Render the scene
+for (int i = 0; i < numModels; i++)
+{
+    model = glm::translate(glm::mat4(1.0), modelPos[i]) * glm::scale(glm::mat4(1.0), modelScale[i]);
+    shadowShader.setUniform("model", model);
+    texture[i].bind(0);		// set the texture before drawing.
+    mesh[i].draw();
+    texture[i].unbind(0);
+}
+
+// Render the light bulb geometry
+model = glm::translate(glm::mat4(1.0), lightPos);
+lightShader.use();
+lightShader.setUniform("lightColor", lightColor);
+lightShader.setUniform("model", model);
+lightShader.setUniform("view", view);
+lightShader.setUniform("projection", projection);
+lightMesh.draw();
+
+glBindFramebuffer(GL_FRAMEBUFFER, 0);
+```
+
+In the second pass, we redraw the scene with additional depth information to generate the shadow.
+
+```
+// Render the scene
+for (int i = 0; i < numModels; i++)
+{
+    model = glm::translate(glm::mat4(1.0), modelPos[i]) * glm::scale(glm::mat4(1.0), modelScale[i]);
+    shaderProgram.setUniform("model", model);
+
+    // Set material properties
+    shaderProgram.setUniform("material.ambient", glm::vec3(0.1f, 0.1f, 0.1f));
+    shaderProgram.setUniformSampler("material.diffuseMap", 0);
+    shaderProgram.setUniform("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+    shaderProgram.setUniform("material.shininess", 32.0f);
+
+    texture[i].bind(0);		// set the texture before drawing.
+
+    // Render the shadow
+    glActiveTexture(GL_TEXTURE0 + 2);
+    glBindTexture(GL_TEXTURE_2D, depthMap);
+    shaderProgram.setUniform("shadowMap", 2);
+
+    mesh[i].draw();			// Render the OBJ mesh
+    texture[i].unbind(0);
+}
+```
+
+We calculate the shadow in the fragment shader:
+
+```
+float ShadowCalculation(vec4 fragPosLightSpace)
+{
+    // perform perspective divide
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+
+    // transform to [0,1] range
+    projCoords = projCoords * 0.5 + 0.5;
+
+    // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
+    float closestDepth = texture(shadowMap, projCoords.xy).r; 
+    
+    // get depth of current fragment from light's perspective
+    float currentDepth = projCoords.z;
+    
+    // check whether current frag pos is in shadow
+    float bias = 0.005;
+    float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0;
+
+    if(projCoords.z > 1.0)
+        shadow = 0.0;
+
+    return shadow;
+}
+```
+
+And apply the shadow to the fragment color.
+
+```
+vec4 texel = texture(texture_map, TexCoord);
+
+// calculate shadow
+float shadow = ShadowCalculation(FragPosLightSpace);  
+
+vec3 color = texture(texture_map, TexCoord).rgb;
+vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * color;    
+
+frag_color = vec4(lighting, 1.0);
+```
 
 
 
 ## 10 Hello ImGUI
 
-
+The example adds ImGUI for the user interface.
 
 ```
 $ cd hello-imgui
