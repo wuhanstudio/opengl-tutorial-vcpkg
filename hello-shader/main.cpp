@@ -9,108 +9,32 @@
 
 #include "ShaderProgram.h"
 
-// Global Variables
-GLFWwindow* gWindow = NULL;
-bool gWireframe = false;
+// Set to true to enable fullscreen
+bool FULLSCREEN = false;
 
-const char* APP_TITLE = "Introduction to Modern OpenGL - Shaders";
+GLFWwindow* gWindow = NULL;
+const char* APP_TITLE = "Introduction to Modern OpenGL - Hello Shader";
+
+// Window dimensions
 const int gWindowWidth = 800;
 const int gWindowHeight = 600;
 
-//-----------------------------------------------------------------------------
-// Is called whenever a key is pressed/released via GLFW
-//-----------------------------------------------------------------------------
-void glfw_onKey(GLFWwindow* window, int key, int scancode, int action, int mode)
-{
-	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, GL_TRUE);
+// Fullscreen dimensions
+const int gWindowWidthFull = 1920;
+const int gWindowHeightFull = 1200;
 
-	if (key == GLFW_KEY_W && action == GLFW_PRESS)
-	{
-		gWireframe = !gWireframe;
-		if (gWireframe)
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		else
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	}
-}
+bool gWireframe = false;
 
-//-----------------------------------------------------------------------------
-// Is called when the window is resized
-//-----------------------------------------------------------------------------
-void glfw_onFramebufferSize(GLFWwindow* window, int width, int height)
-{
-	glViewport(0, 0, width, height);
-}
-
-bool initOpenGL()
-{
-	// Intialize GLFW 
-	if (!glfwInit())
-	{
-		fmt::println("GLFW initialization failed");
-		return false;
-	}
-
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);	// forward compatible with newer versions of OpenGL as they become available but not backward compatible (it will not run on devices that do not support OpenGL 3.3
-
-	// Create an OpenGL 3.3 core, forward compatible context window
-	gWindow = glfwCreateWindow(gWindowWidth, gWindowHeight, APP_TITLE, NULL, NULL);
-	if (gWindow == NULL)
-	{
-		fmt::println("Failed to create GLFW window");
-		glfwTerminate();
-		return false;
-	}
-
-	// Make the window's context the current one
-	glfwMakeContextCurrent(gWindow);
-
-	gladLoadGL();
-
-	// Set the required callback functions
-	glfwSetKeyCallback(gWindow, glfw_onKey);
-	glfwSetFramebufferSizeCallback(gWindow, glfw_onFramebufferSize);
-
-	glClearColor(0.23f, 0.38f, 0.47f, 1.0f);
-
-	// Define the viewport dimensions
-	glViewport(0, 0, gWindowWidth, gWindowHeight);
-
-	return true;
-}
-
-static void showFPS(GLFWwindow* window) {
-	static double previousSeconds = 0.0;
-	static int frameCount = 0;
-	double elapsedSeconds;
-	double currentSeconds = glfwGetTime();
-
-	elapsedSeconds = currentSeconds - previousSeconds;
-
-	if (elapsedSeconds > 0.25) {
-		previousSeconds = currentSeconds;
-		double fps = (double)frameCount / elapsedSeconds;
-		double msPerFrame = 1000.0 / fps;
-
-		char title[80];
-		std::snprintf(title, sizeof(title), "Hello Shader @ fps: %.2f, ms/frame: %.2f", fps, msPerFrame);
-		glfwSetWindowTitle(window, title);
-
-		frameCount = 0;
-	}
-
-	frameCount++;
-}
+// Function prototypes
+void glfw_onKey(GLFWwindow* window, int key, int scancode, int action, int mode);
+void glfw_onFramebufferSize(GLFWwindow* window, int width, int height);
+void showFPS(GLFWwindow* window);
+bool initOpenGL();
 
 int main()
 {
 	if (!initOpenGL())
 	{
-		// An error occured
 		std::cerr << "GLFW initialization failed" << std::endl;
 		return -1;
 	}
@@ -164,19 +88,22 @@ int main()
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		// Poll for and process events
-		glfwPollEvents();
-
 		// Render the quad
 		// Must be called BEFORE setting uniforms because setting uniforms is done
 		// on the currently active shader program.
 		shaderProgram.use();
 
+		// Animate the quad
 		GLfloat time = (GLfloat)glfwGetTime();
-		GLfloat blueColor = (sin(time) / 2) + 0.5f;
+
+		// Update the positon of the quad
 		glm::vec2 pos;
 		pos.x = sin(time) / 2;
 		pos.y = cos(time) / 2;
+
+		// Update the color of the quad
+		GLfloat blueColor = (sin(time) / 2) + 0.5f;
+
 		shaderProgram.setUniform("vertColor", glm::vec4(0.0f, 0.0f, blueColor, 1.0f));
 		shaderProgram.setUniform("posOffset", pos);
 
@@ -187,6 +114,7 @@ int main()
 
 		// Swap front and back buffers
 		glfwSwapBuffers(gWindow);
+		glfwPollEvents();
 	}
 
 	// Clean up
@@ -199,4 +127,96 @@ int main()
 	glfwTerminate();
 
 	return 0;
+}
+
+// Press ESC to close the window
+// Press 1 to toggle wireframe mode
+void glfw_onKey(GLFWwindow* window, int key, int scancode, int action, int mode)
+{
+	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, GL_TRUE);
+
+	if (key == GLFW_KEY_1 && action == GLFW_PRESS)
+	{
+		gWireframe = !gWireframe;
+		if (gWireframe)
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		else
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
+}
+
+// Is called when the window is resized
+void glfw_onFramebufferSize(GLFWwindow* window, int width, int height)
+{
+	glViewport(0, 0, width, height);
+}
+
+bool initOpenGL()
+{
+	if (!glfwInit())
+	{
+		fmt::println("GLFW initialization failed");
+		return false;
+	}
+
+	// Set the OpenGL version
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);	// forward compatible with newer versions of OpenGL as they become available but not backward compatible (it will not run on devices that do not support OpenGL 3.3
+
+	// Create a window
+	if (FULLSCREEN)
+		gWindow = glfwCreateWindow(gWindowWidthFull, gWindowHeightFull, APP_TITLE, glfwGetPrimaryMonitor(), NULL);
+	else
+		gWindow = glfwCreateWindow(gWindowWidth, gWindowHeight, APP_TITLE, NULL, NULL);
+
+	if (gWindow == NULL)
+	{
+		fmt::println("Failed to create GLFW window");
+		glfwTerminate();
+		return false;
+	}
+
+	// Make the window's context the current one
+	glfwMakeContextCurrent(gWindow);
+
+	gladLoadGL();
+
+	// Set the required callback functions
+	glfwSetKeyCallback(gWindow, glfw_onKey);
+	glfwSetFramebufferSizeCallback(gWindow, glfw_onFramebufferSize);
+
+	glClearColor(0.23f, 0.38f, 0.47f, 1.0f);
+
+	if (FULLSCREEN)
+		glViewport(0, 0, gWindowWidthFull, gWindowHeightFull);
+	else
+		glViewport(0, 0, gWindowWidth, gWindowHeight);
+
+	return true;
+}
+
+static void showFPS(GLFWwindow* window) {
+	static double previousSeconds = 0.0;
+	static int frameCount = 0;
+	double elapsedSeconds;
+	double currentSeconds = glfwGetTime();
+
+	elapsedSeconds = currentSeconds - previousSeconds;
+
+	if (elapsedSeconds > 0.25) {
+		previousSeconds = currentSeconds;
+		double fps = (double)frameCount / elapsedSeconds;
+		double msPerFrame = 1000.0 / fps;
+
+		char title[80];
+		std::snprintf(title, sizeof(title), "Hello Shader @ fps: %.2f, ms/frame: %.2f", fps, msPerFrame);
+		glfwSetWindowTitle(window, title);
+
+		frameCount = 0;
+	}
+
+	frameCount++;
 }

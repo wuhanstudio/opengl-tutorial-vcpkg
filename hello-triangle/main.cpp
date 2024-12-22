@@ -71,6 +71,8 @@ int main() {
 		glfwTerminate();
 		return -1;
 	}
+
+	// Make the window's context the current one
 	glfwMakeContextCurrent(gWindow);
 
 	glfwSetKeyCallback(gWindow, glfw_onKey);

@@ -114,14 +114,17 @@ $ ./build/hello-triangle
 You'll learn how to compile and link vertex shader and fragment shader.
 
 ```
+// Compile and link the vertex shader
 GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
 glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
 glCompileShader(vertexShader);
 
+// Compile and link the fragment shader
 GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
 glCompileShader(fragmentShader);
 
+// Link the vertex and fragment shader into a shader program
 GLuint shaderProgram = glCreateProgram();
 
 glAttachShader(shaderProgram, vertexShader);
@@ -135,6 +138,7 @@ glDeleteShader(fragmentShader);
 And bind the data to VAO, VBO.
 
 ```
+// Create VBO and VAO
 GLuint VAO, VBO;
 
 glGenVertexArrays(1, &VAO);
@@ -147,6 +151,7 @@ glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 glEnableVertexAttribArray(0);
 
+// Unbind the VBO and VAO
 glBindBuffer(GL_ARRAY_BUFFER, 0);
 glBindVertexArray(0);
 ```
@@ -167,11 +172,17 @@ $ ./build/hello-shader
 ![](docs/hello-shader.gif)
 
 ```
+// Animate the quad
 GLfloat time = (GLfloat)glfwGetTime();
-GLfloat blueColor = (sin(time) / 2) + 0.5f;
+
+// Update the positon of the quad
 glm::vec2 pos;
 pos.x = sin(time) / 2;
 pos.y = cos(time) / 2;
+
+// Update the color of the quad
+GLfloat blueColor = (sin(time) / 2) + 0.5f;
+
 shaderProgram.setUniform("vertColor", glm::vec4(0.0f, 0.0f, blueColor, 1.0f));
 shaderProgram.setUniform("posOffset", pos);
 ```

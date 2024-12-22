@@ -45,6 +45,8 @@ int main() {
 		glfwTerminate();
 		return -1;
 	}
+
+	// Make the window's context the current one
 	glfwMakeContextCurrent(gWindow);
 
 	// Set the callback function for ESC key
