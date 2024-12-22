@@ -22,6 +22,7 @@
 #include "Texture2D.h"
 #include "Camera.h"
 #include "Mesh.h"
+#include "Skybox.h"
 
 // Global Variables
 GLFWwindow* gWindow = NULL;
@@ -111,6 +112,22 @@ int main()
 		glm::vec3(0.7f, 0.7f, 0.7f)		// bunny
 	};
 
+	// Skybox
+	ShaderProgram skyboxShader;
+	skyboxShader.loadShaders("shaders/skybox.vert", "shaders/skybox.frag");
+
+	skyboxShader.use();
+	skyboxShader.setUniform("skybox", 0);
+
+	Skybox skybox({
+		"textures/skybox/right.jpg",
+		"textures/skybox/left.jpg",
+		"textures/skybox/top.jpg",
+		"textures/skybox/bottom.jpg",
+		"textures/skybox/front.jpg",
+		"textures/skybox/back.jpg"
+		});
+
 	double lastTime = glfwGetTime();
 	float angle = 0.0f;
 
@@ -193,6 +210,8 @@ int main()
 		lightShader.setUniform("projection", projection);
 		lightMesh.draw();
 
+		skybox.render(skyboxShader, view, projection);
+
 		// Swap front and back buffers
 		glfwSwapBuffers(gWindow);
 
@@ -214,6 +233,7 @@ int main()
 	mesh[5].destroy();
 
 	shaderProgram.destroy();
+	skybox.destroy();
 
 	glfwTerminate();
 
