@@ -41,7 +41,7 @@ int main() {
 		gWindow = glfwCreateWindow(gWindowWidth, gWindowHeight, APP_TITLE, NULL, NULL);
 
 	if (gWindow == NULL) {
-		fmt::print("Failed to create a window\n");
+		fmt::println("Failed to create a window");
 		glfwTerminate();
 		return -1;
 	}
