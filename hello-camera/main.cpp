@@ -18,19 +18,27 @@
 #include "Texture2D.h"
 #include "Camera.h"
 
-// Global Variables
-GLFWwindow* gWindow = NULL;
-bool gWireframe = false;
+// Global Variables// Set to true to enable fullscreen
+bool FULLSCREEN = false;
 
-const char* APP_TITLE = "Introduction to Modern OpenGL - Textures";
+GLFWwindow* gWindow = NULL;
+const char* APP_TITLE = "Introduction to Modern OpenGL - Hello Camera";
+
+// Window dimensions
 const int gWindowWidth = 800;
 const int gWindowHeight = 600;
+
+// Fullscreen dimensions
+const int gWindowWidthFull = 1920;
+const int gWindowHeightFull = 1200;
+
+bool gWireframe = false;
 
 const std::string texture1Filename = "textures/crate.jpg";
 const std::string texture2Filename = "textures/airplane.png";
 const std::string gridImage = "textures/grid.jpg";
 
-FPSCamera fpsCamera(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(1.0, 1.0, 1.0));
+FPSCamera fpsCamera(glm::vec3(0.0f, 5.0f, 20.0f), -180, -10);
 const double ZOOM_SENSITIVITY = -3.0;
 const float MOVE_SPEED = 5.0; // units per second
 const float MOUSE_SENSITIVITY = 0.1f;
@@ -43,9 +51,6 @@ void update(double elapsedTime);
 void showFPS(GLFWwindow* window);
 bool initOpenGL();
 
-//-----------------------------------------------------------------------------
-// Main Application Entry Point
-//-----------------------------------------------------------------------------
 int main()
 {
 	if (!initOpenGL())
@@ -133,7 +138,7 @@ int main()
 	glBindVertexArray(0);					// unbind to make sure other code doesn't change it
 
 	ShaderProgram shaderProgram;
-	shaderProgram.loadShaders("shaders/basic.vert", "shaders/basic_part2.frag");
+	shaderProgram.loadShaders("shaders/basic.vert", "shaders/basic.frag");
 
 	Texture2D texture1;
 	texture1.loadTexture(texture1Filename);
@@ -157,25 +162,15 @@ int main()
 		double currentTime = glfwGetTime();
 		double deltaTime = currentTime - lastTime;
 
-		// Poll for and process events
-		glfwPollEvents();
-
 		update(deltaTime);
 
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// Wait!  Why didn't we call glUniform1i for the texture in Part 1?  The answer is OpenGL uses the 
-		// default texture unit of 0 for the first texture so if you only have one texture sampler in the fragment
-		// shader then you do not need to explicitly set the sampler by calling glUniform1i.
-
-		// --------------- Method 1 For Setting Texture Samplers -------------------------
-		// #1 Method for setting uniform samplers
 		texture1.bind(0);
 		texture2.bind(1);
 		glUniform1i(glGetUniformLocation(shaderProgram.getProgram(), "texSampler1"), 0);
 		glUniform1i(glGetUniformLocation(shaderProgram.getProgram(), "texSampler2"), 1);
-		//--------------------------------------------------------------------------------
 
 		glm::mat4 model(1.0), view(1.0), projection(1.0);
 
@@ -217,6 +212,7 @@ int main()
 
 		// Swap front and back buffers
 		glfwSwapBuffers(gWindow);
+		glfwPollEvents();
 
 		lastTime = currentTime;
 	}
@@ -236,9 +232,6 @@ int main()
 	return 0;
 }
 
-//-----------------------------------------------------------------------------
-// Initialize GLFW and OpenGL
-//-----------------------------------------------------------------------------
 bool initOpenGL()
 {
 	// Intialize GLFW 
@@ -248,13 +241,18 @@ bool initOpenGL()
 		return false;
 	}
 
+	// Set the OpenGL version
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);	// forward compatible with newer versions of OpenGL as they become available but not backward compatible (it will not run on devices that do not support OpenGL 3.3
 
-	// Create an OpenGL 3.3 core, forward compatible context window
-	gWindow = glfwCreateWindow(gWindowWidth, gWindowHeight, APP_TITLE, NULL, NULL);
+	// Create a window
+	if (FULLSCREEN)
+		gWindow = glfwCreateWindow(gWindowWidthFull, gWindowHeightFull, APP_TITLE, glfwGetPrimaryMonitor(), NULL);
+	else
+		gWindow = glfwCreateWindow(gWindowWidth, gWindowHeight, APP_TITLE, NULL, NULL);
+
 	if (gWindow == NULL)
 	{
 		fmt::println("Failed to create GLFW window");
@@ -278,16 +276,17 @@ bool initOpenGL()
 
 	glClearColor(0.23f, 0.38f, 0.47f, 1.0f);
 
-	// Define the viewport dimensions
-	glViewport(0, 0, gWindowWidth, gWindowHeight);
+	if (FULLSCREEN)
+		glViewport(0, 0, gWindowWidthFull, gWindowHeightFull);
+	else
+		glViewport(0, 0, gWindowWidth, gWindowHeight);
+
 	glEnable(GL_DEPTH_TEST);
 
 	return true;
 }
 
-//-----------------------------------------------------------------------------
 // Is called whenever a key is pressed/released via GLFW
-//-----------------------------------------------------------------------------
 void glfw_onKey(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
@@ -303,17 +302,13 @@ void glfw_onKey(GLFWwindow* window, int key, int scancode, int action, int mode)
 	}
 }
 
-//-----------------------------------------------------------------------------
 // Is called when the window is resized
-//-----------------------------------------------------------------------------
 void glfw_onFramebufferSize(GLFWwindow* window, int width, int height)
 {
 	glViewport(0, 0, width, height);
 }
 
-//-----------------------------------------------------------------------------
 // Called by GLFW when the mouse wheel is rotated
-//-----------------------------------------------------------------------------
 void glfw_onMouseScroll(GLFWwindow* window, double deltaX, double deltaY)
 {
 	double fov = fpsCamera.getFOV() + deltaY * ZOOM_SENSITIVITY;
@@ -323,9 +318,7 @@ void glfw_onMouseScroll(GLFWwindow* window, double deltaX, double deltaY)
 	fpsCamera.setFOV((float)fov);
 }
 
-//-----------------------------------------------------------------------------
-// Update stuff every frame
-//-----------------------------------------------------------------------------
+// Update the camera every frame
 void update(double elapsedTime)
 {
 	// Camera orientation
@@ -361,10 +354,6 @@ void update(double elapsedTime)
 		fpsCamera.move(MOVE_SPEED * (float)elapsedTime * -fpsCamera.getUp());
 }
 
-//-----------------------------------------------------------------------------
-// Code computes the average frames per second, and also the average time it takes
-// to render one frame.  These stats are appended to the window caption bar.
-//-----------------------------------------------------------------------------
 void showFPS(GLFWwindow* window) {
 	static double previousSeconds = 0.0;
 	static int frameCount = 0;
@@ -379,7 +368,7 @@ void showFPS(GLFWwindow* window) {
 		double msPerFrame = 1000.0 / fps;
 
 		char title[80];
-		std::snprintf(title, sizeof(title), "Hello Texture @ fps: %.2f, ms/frame: %.2f", fps, msPerFrame);
+		std::snprintf(title, sizeof(title), "Hello Camera @ fps: %.2f, ms/frame: %.2f", fps, msPerFrame);
 		glfwSetWindowTitle(window, title);
 
 		frameCount = 0;
