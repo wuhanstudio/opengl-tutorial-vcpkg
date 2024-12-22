@@ -18,6 +18,7 @@
 #include "Texture2D.h"
 #include "Camera.h"
 #include "Mesh.h"
+#include "Skybox.h"
 
 // Set to true to enable fullscreen
 bool FULLSCREEN = false;
@@ -93,6 +94,21 @@ int main()
 		glm::vec3(10.0f, 1.0f, 10.0f)	// floor
 	};
 
+	ShaderProgram skyboxShader;
+	skyboxShader.loadShaders("shaders/skybox.vert", "shaders/skybox.frag");
+
+	skyboxShader.use();
+	skyboxShader.setUniform("skybox", 0);
+
+	Skybox skybox({
+		"textures/skybox/right.jpg",
+		"textures/skybox/left.jpg",
+		"textures/skybox/top.jpg",
+		"textures/skybox/bottom.jpg",
+		"textures/skybox/front.jpg",
+		"textures/skybox/back.jpg"
+		});
+
 	double lastTime = glfwGetTime();
 
 	// Rendering loop
@@ -105,9 +121,6 @@ int main()
 
 		double currentTime = glfwGetTime();
 		double deltaTime = currentTime - lastTime;
-
-		// Poll for and process events
-		glfwPollEvents();
 
 		update(deltaTime);
 
@@ -143,8 +156,12 @@ int main()
 			texture[i].unbind(0);
 		}
 
+		// Render the skybox
+		skybox.render(skyboxShader, view, projection);
+
 		// Swap front and back buffers
 		glfwSwapBuffers(gWindow);
+		glfwPollEvents();
 
 		lastTime = currentTime;
 	}
@@ -160,6 +177,7 @@ int main()
 	mesh[3].destroy();
 
 	shaderProgram.destroy();
+	skyboxShader.destroy();
 
 	glfwTerminate();
 

@@ -16,6 +16,9 @@
     <Filter Include="Resource Files\Shaders">
       <UniqueIdentifier>{18a0ae2e-d110-4b15-a312-c72439f9925f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Textures">
+      <UniqueIdentifier>{855d78c2-13dc-46d4-b21e-3e24f796e872}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp">
@@ -30,6 +33,9 @@
     <ClCompile Include="ShaderProgram.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Skybox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -41,6 +47,9 @@
     <ClInclude Include="Texture2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Skybox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\basic.frag">
@@ -49,17 +58,37 @@
     <None Include="shaders\basic.vert">
       <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="shaders\basic_part1.frag">
+    <None Include="shaders\skybox.frag">
       <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="shaders\basic_part2.frag">
+    <None Include="shaders\skybox.vert">
       <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="shaders\skybox.fs">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="shaders\skybox.vs">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="textures\back.jpg">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="textures\bottom.jpg">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="textures\crate.jpg">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="textures\front.jpg">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="textures\grid.jpg">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="textures\left.jpg">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="textures\right.jpg">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="textures\top.jpg">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
   </ItemGroup>
 </Project>

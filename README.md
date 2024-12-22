@@ -6,8 +6,8 @@
   * [03 Hello Shader](#03-hello-shader)
   * [04 Hello Texture](#04-hello-texture)
   * [05 Hello Camera](#05-hello-camera)
-  * [06 Hello Object](#06-hello-object)
-  * [07 Hello Skybox](#07-hello-skybox)
+  * [06 Hello Skybox](#06-hello-skybox)
+  * [07 Hello Object](#07-hello-object)
   * [08 Hello Lighting](#08-hello-lighting)
   * [09 Hello Shadow](#09-hello-shadow)
   * [10 Hello ImGUI](#10-hello-imgui)
@@ -312,7 +312,62 @@ void main()
 
 
 
-## 06 Hello Object
+## 06 Hello Skybox
+
+This example adds a skybox to the scene.
+
+```
+$ cd hello-skybox
+$ cmake -B build --preset vcpkg
+$ cmake --build build
+$ ./build/hello-skybox
+```
+
+![](docs/hello-skybox.png)
+
+Draw the skybox
+
+```
+// skybox cube
+glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes
+skyboxShader.use();
+skyboxShader.setUniform("view", glm::mat4(glm::mat3(view)));
+skyboxShader.setUniform("projection", projection);
+
+glBindVertexArray(skyboxVAO);
+
+glActiveTexture(GL_TEXTURE0);
+glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+
+// Draw the skybox
+glDrawArrays(GL_TRIANGLES, 0, 36);
+
+glBindVertexArray(0);
+glDepthFunc(GL_LESS); // set depth function back to default
+```
+
+The vertex shader:
+
+```
+#version 330 core
+layout (location = 0) in vec3 pos;
+
+uniform mat4 view;
+uniform mat4 projection;
+
+out vec3 TexCoords;
+
+void main()
+{
+	TexCoords = pos;
+	vec4 pos = projection * view * vec4(pos, 1.0f);
+	gl_Position = pos.xyww;
+}
+```
+
+
+
+## 07 Hello Object
 
 This example use the library [TinyOBJLoader](https://github.com/tinyobjloader/tinyobjloader) to load 3D models.
 
@@ -422,13 +477,9 @@ for (int i = 0; i < numModels; i++)
 
 
 
-## 07 Hello Skybox
-
-
-
-
-
 ## 08 Hello Lighting
+
+
 
 ```
 $ cd hello-lighting
@@ -442,6 +493,15 @@ $ ./build/hello-lighting
 
 
 ## 09 Hello Shadow
+
+
+
+```
+$ cd hello-shadow
+$ cmake -B build --preset vcpkg
+$ cmake --build build
+$ ./build/hello-shadow
+```
 
 
 

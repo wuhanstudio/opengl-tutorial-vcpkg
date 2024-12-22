@@ -20,14 +20,23 @@
 #include "ShaderProgram.h"
 #include "Texture2D.h"
 #include "Camera.h"
+#include "Skybox.h"
 
-// Global Variables
+// Set to true to enable fullscreen
+bool FULLSCREEN = false;
+
 GLFWwindow* gWindow = NULL;
-bool gWireframe = false;
+const char* APP_TITLE = "Introduction to Modern OpenGL - Hello Skybox";
 
-const char* APP_TITLE = "Introduction to Modern OpenGL - Textures";
+// Window dimensions
 const int gWindowWidth = 800;
 const int gWindowHeight = 600;
+
+// Fullscreen dimensions
+const int gWindowWidthFull = 1920;
+const int gWindowHeightFull = 1200;
+
+bool gWireframe = false;
 
 const std::string texture1Filename = "textures/crate.jpg";
 const std::string texture2Filename = "textures/airplane.png";
@@ -111,51 +120,6 @@ int main()
 			1.0f, -1.0f, -1.0f, 1.0f, 0.0f,
 	};
 
-	float skyboxVertices[] = {
-		// positions          
-		-1.0f,  1.0f, -1.0f,
-		-1.0f, -1.0f, -1.0f,
-		 1.0f, -1.0f, -1.0f,
-		 1.0f, -1.0f, -1.0f,
-		 1.0f,  1.0f, -1.0f,
-		-1.0f,  1.0f, -1.0f,
-
-		-1.0f, -1.0f,  1.0f,
-		-1.0f, -1.0f, -1.0f,
-		-1.0f,  1.0f, -1.0f,
-		-1.0f,  1.0f, -1.0f,
-		-1.0f,  1.0f,  1.0f,
-		-1.0f, -1.0f,  1.0f,
-
-		 1.0f, -1.0f, -1.0f,
-		 1.0f, -1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		 1.0f,  1.0f, -1.0f,
-		 1.0f, -1.0f, -1.0f,
-
-		-1.0f, -1.0f,  1.0f,
-		-1.0f,  1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		 1.0f, -1.0f,  1.0f,
-		-1.0f, -1.0f,  1.0f,
-
-		-1.0f,  1.0f, -1.0f,
-		 1.0f,  1.0f, -1.0f,
-		 1.0f,  1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		-1.0f,  1.0f,  1.0f,
-		-1.0f,  1.0f, -1.0f,
-
-		-1.0f, -1.0f, -1.0f,
-		-1.0f, -1.0f,  1.0f,
-		 1.0f, -1.0f, -1.0f,
-		 1.0f, -1.0f, -1.0f,
-		-1.0f, -1.0f,  1.0f,
-		 1.0f, -1.0f,  1.0f
-	};
-
 	// Cube and floor positions
 	glm::vec3 cubePos = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::vec3 floorPos = glm::vec3(0.0f, -1.0f, 0.0f);
@@ -181,49 +145,11 @@ int main()
 
 	glBindVertexArray(0);					// unbind to make sure other code doesn't change it
 
-	// skybox VAO
-	GLuint skyboxVAO, skyboxVBO;
-
-	glGenVertexArrays(1, &skyboxVAO);
-	glGenBuffers(1, &skyboxVBO);
-
-	glBindVertexArray(skyboxVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
-
-	glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
-
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-
-	glBindVertexArray(0);					// unbind to make sure other code doesn't change it
-
-	// Create a framebuffer object and attach a depth buffer to it
-	unsigned int depthMapFBO;
-	glGenFramebuffers(1, &depthMapFBO);
-
-	const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
-
-	unsigned int depthMap;
-	glGenTextures(1, &depthMap);
-	glBindTexture(GL_TEXTURE_2D, depthMap);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
-		SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
-	glDrawBuffer(GL_NONE);
-	glReadBuffer(GL_NONE);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
 	ShaderProgram shaderProgram;
-	shaderProgram.loadShaders("shaders/basic.vert", "shaders/basic_part2.frag");
+	shaderProgram.loadShaders("shaders/basic.vert", "shaders/basic.frag");
 
 	ShaderProgram skyboxShader;
-	skyboxShader.loadShaders("shaders/skybox.vs", "shaders/skybox.fs");
+	skyboxShader.loadShaders("shaders/skybox.vert", "shaders/skybox.frag");
 
 	Texture2D texture1;
 	texture1.loadTexture(texture1Filename);
@@ -234,19 +160,17 @@ int main()
 	Texture2D floorTexture;
 	floorTexture.loadTexture(gridImage, true);
 
-	std::vector<std::string> faces
-	{
-		"textures/right.jpg",
-		"textures/left.jpg",
-		"textures/top.jpg",
-		"textures/bottom.jpg",
-		"textures/front.jpg",
-		"textures/back.jpg"
-	};
-	unsigned int cubemapTexture = loadCubemap(faces);
-	
 	skyboxShader.use();
 	skyboxShader.setUniform("skybox", 0);
+
+	Skybox skybox({
+		"textures/skybox/right.jpg",
+		"textures/skybox/left.jpg",
+		"textures/skybox/top.jpg",
+		"textures/skybox/bottom.jpg",
+		"textures/skybox/front.jpg",
+		"textures/skybox/back.jpg"
+		});
 
 	double lastTime = glfwGetTime();
 
@@ -261,9 +185,6 @@ int main()
 		double currentTime = glfwGetTime();
 		double deltaTime = currentTime - lastTime;
 
-		// Poll for and process events
-		glfwPollEvents();
-
 		update(deltaTime);
 
 		// Clear the screen
@@ -273,13 +194,10 @@ int main()
 		// default texture unit of 0 for the first texture so if you only have one texture sampler in the fragment
 		// shader then you do not need to explicitly set the sampler by calling glUniform1i.
 
-		// --------------- Method 1 For Setting Texture Samplers -------------------------
-		// #1 Method for setting uniform samplers
 		texture1.bind(0);
 		texture2.bind(1);
 		glUniform1i(glGetUniformLocation(shaderProgram.getProgram(), "texSampler1"), 0);
 		glUniform1i(glGetUniformLocation(shaderProgram.getProgram(), "texSampler2"), 1);
-		//--------------------------------------------------------------------------------
 
 		glm::mat4 model(1.0), view(1.0), projection(1.0);
 
@@ -320,25 +238,12 @@ int main()
 
 		glBindVertexArray(0);
 
-		// skybox cube
-		glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
-		skyboxShader.use();
-		skyboxShader.setUniform("view", glm::mat4(glm::mat3(view)));
-		skyboxShader.setUniform("projection", projection);
-
-		glBindVertexArray(skyboxVAO);
-
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
-		
-		// Draw the skybox
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-
-		glBindVertexArray(0);
-		glDepthFunc(GL_LESS); // set depth function back to default
+		// Render the skybox
+		skybox.render(skyboxShader, view, projection);
 
 		// Swap front and back buffers
 		glfwSwapBuffers(gWindow);
+		glfwPollEvents();
 
 		lastTime = currentTime;
 	}
@@ -347,12 +252,11 @@ int main()
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 
-	glDeleteVertexArrays(1, &skyboxVAO);
-	glDeleteBuffers(1, &skyboxVBO);
-
 	texture1.destroy();
 	texture2.destroy();
 	floorTexture.destroy();
+
+	skybox.destroy();
 
 	skyboxShader.destroy();
 	shaderProgram.destroy();
@@ -374,13 +278,18 @@ bool initOpenGL()
 		return false;
 	}
 
+	// Set the OpenGL version
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);	// forward compatible with newer versions of OpenGL as they become available but not backward compatible (it will not run on devices that do not support OpenGL 3.3
 
-	// Create an OpenGL 3.3 core, forward compatible context window
-	gWindow = glfwCreateWindow(gWindowWidth, gWindowHeight, APP_TITLE, NULL, NULL);
+	// Create a window
+	if (FULLSCREEN)
+		gWindow = glfwCreateWindow(gWindowWidthFull, gWindowHeightFull, APP_TITLE, glfwGetPrimaryMonitor(), NULL);
+	else
+		gWindow = glfwCreateWindow(gWindowWidth, gWindowHeight, APP_TITLE, NULL, NULL);
+
 	if (gWindow == NULL)
 	{
 		fmt::println("Failed to create GLFW window");
@@ -404,16 +313,17 @@ bool initOpenGL()
 
 	glClearColor(0.23f, 0.38f, 0.47f, 1.0f);
 
-	// Define the viewport dimensions
-	glViewport(0, 0, gWindowWidth, gWindowHeight);
+	if (FULLSCREEN)
+		glViewport(0, 0, gWindowWidthFull, gWindowHeightFull);
+	else
+		glViewport(0, 0, gWindowWidth, gWindowHeight);
+
 	glEnable(GL_DEPTH_TEST);
 
 	return true;
 }
 
-//-----------------------------------------------------------------------------
 // Is called whenever a key is pressed/released via GLFW
-//-----------------------------------------------------------------------------
 void glfw_onKey(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
@@ -429,17 +339,13 @@ void glfw_onKey(GLFWwindow* window, int key, int scancode, int action, int mode)
 	}
 }
 
-//-----------------------------------------------------------------------------
 // Is called when the window is resized
-//-----------------------------------------------------------------------------
 void glfw_onFramebufferSize(GLFWwindow* window, int width, int height)
 {
 	glViewport(0, 0, width, height);
 }
 
-//-----------------------------------------------------------------------------
 // Called by GLFW when the mouse wheel is rotated
-//-----------------------------------------------------------------------------
 void glfw_onMouseScroll(GLFWwindow* window, double deltaX, double deltaY)
 {
 	double fov = fpsCamera.getFOV() + deltaY * ZOOM_SENSITIVITY;
@@ -449,9 +355,7 @@ void glfw_onMouseScroll(GLFWwindow* window, double deltaX, double deltaY)
 	fpsCamera.setFOV((float)fov);
 }
 
-//-----------------------------------------------------------------------------
-// Update stuff every frame
-//-----------------------------------------------------------------------------
+// Update the camera every frame
 void update(double elapsedTime)
 {
 	// Camera orientation
@@ -487,10 +391,6 @@ void update(double elapsedTime)
 		fpsCamera.move(MOVE_SPEED * (float)elapsedTime * -fpsCamera.getUp());
 }
 
-//-----------------------------------------------------------------------------
-// Code computes the average frames per second, and also the average time it takes
-// to render one frame.  These stats are appended to the window caption bar.
-//-----------------------------------------------------------------------------
 void showFPS(GLFWwindow* window) {
 	static double previousSeconds = 0.0;
 	static int frameCount = 0;
@@ -512,46 +412,4 @@ void showFPS(GLFWwindow* window) {
 	}
 
 	frameCount++;
-}
-
-// loads a cubemap texture from 6 individual texture faces
-// order:
-// +X (right)
-// -X (left)
-// +Y (top)
-// -Y (bottom)
-// +Z (front) 
-// -Z (back)
-// -------------------------------------------------------
-unsigned int loadCubemap(std::vector<std::string> faces)
-{
-	unsigned int textureID;
-	glGenTextures(1, &textureID);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
-
-	int width, height, nrChannels;
-	for (unsigned int i = 0; i < faces.size(); i++)
-	{
-		stbi_set_flip_vertically_on_load(false);
-		unsigned char* data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
-		if (data)
-		{
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-			stbi_image_free(data);
-		}
-		else
-		{
-			std::cout << "Cubemap texture failed to load at path: " << faces[i] << std::endl;
-			stbi_image_free(data);
-		}
-	}
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	return textureID;
 }

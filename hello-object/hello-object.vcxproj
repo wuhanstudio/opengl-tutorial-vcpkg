@@ -136,12 +136,14 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
+    <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="Texture2D.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="ShaderProgram.h" />
+    <ClInclude Include="Skybox.h" />
     <ClInclude Include="Texture2D.h" />
   </ItemGroup>
   <ItemGroup>
@@ -163,6 +165,8 @@
     </None>
     <None Include="shaders\basic.frag" />
     <None Include="shaders\basic.vert" />
+    <None Include="shaders\skybox.frag" />
+    <None Include="shaders\skybox.vert" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="models\crate.obj">
@@ -183,9 +187,15 @@
     </Object>
   </ItemGroup>
   <ItemGroup>
+    <Image Include="textures\back.jpg" />
+    <Image Include="textures\bottom.jpg" />
     <Image Include="textures\crate.jpg" />
+    <Image Include="textures\front.jpg" />
+    <Image Include="textures\left.jpg" />
+    <Image Include="textures\right.jpg" />
     <Image Include="textures\robot_diffuse.jpg" />
     <Image Include="textures\tile_floor.jpg" />
+    <Image Include="textures\top.jpg" />
     <Image Include="textures\woodcrate_diffuse.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
