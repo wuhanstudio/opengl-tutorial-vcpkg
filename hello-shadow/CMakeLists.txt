@@ -1,0 +1,17 @@
+cmake_minimum_required(VERSION 3.10)
+
+set( CMAKE_C_COMPILER "gcc" )
+set( CMAKE_CXX_COMPILER "g++" )
+
+project(HelloShadow)
+
+find_package(fmt CONFIG REQUIRED)
+find_package(glad CONFIG REQUIRED)
+find_package(glfw3 CONFIG REQUIRED)
+find_package(glm CONFIG REQUIRED)
+find_package(Stb REQUIRED)
+
+add_executable(hello-shadow main.cpp ShaderProgram.cpp Texture2D.cpp Camera.cpp Mesh.cpp)
+
+target_include_directories(hello-shadow PRIVATE ${Stb_INCLUDE_DIR})
+target_link_libraries(hello-shadow PRIVATE fmt::fmt glfw glad::glad glm::glm)

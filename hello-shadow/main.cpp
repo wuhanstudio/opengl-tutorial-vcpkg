@@ -1,25 +1,28 @@
 //-----------------------------------------------------------------------------
+// Textures_2.cpp by Steve Jones 
 // Copyright (c) 2015-2019 Game Institute. All Rights Reserved.
+//
+// - Add another texture
+// - fragment shader blending using GLSL mix()
 //-----------------------------------------------------------------------------
 #include <iostream>
 #include <sstream>
 #include <string>
-#include <vector>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include <glm/glm.hpp>
+#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
-#include <stb_image.h>
 
 #include <fmt/core.h>
 
 #include "ShaderProgram.h"
 #include "Texture2D.h"
 #include "Camera.h"
+#include "Mesh.h"
+#include <glm/gtc/type_ptr.hpp>
 
 // Global Variables
 GLFWwindow* gWindow = NULL;
@@ -33,13 +36,12 @@ const std::string texture1Filename = "textures/crate.jpg";
 const std::string texture2Filename = "textures/airplane.png";
 const std::string gridImage = "textures/grid.jpg";
 
-FPSCamera fpsCamera(glm::vec3(0.0f, 5.0f, 15.0f), -180, -10);
+FPSCamera fpsCamera(glm::vec3(0.0f, 5.0f, 20.0f), -180, -10);
 const double ZOOM_SENSITIVITY = -3.0;
 const float MOVE_SPEED = 5.0; // units per second
 const float MOUSE_SENSITIVITY = 0.1f;
 
 // Function prototypes
-unsigned int loadCubemap(std::vector<std::string> faces);
 void glfw_onKey(GLFWwindow* window, int key, int scancode, int action, int mode);
 void glfw_onFramebufferSize(GLFWwindow* window, int width, int height);
 void glfw_onMouseScroll(GLFWwindow* window, double deltaX, double deltaY);
@@ -58,152 +60,67 @@ int main()
 		return -1;
 	}
 
-	// 1. Set up an array of vectex data for a cube with index buffer data
-	GLfloat cubeVertices[] = {
-		// position		 // tex coords
+	// Light shader
+	ShaderProgram shaderProgram;
+	shaderProgram.loadShaders("shaders/lighting_phong.vert", "shaders/lighting_phong.frag");
+	shaderProgram.loadShaders("shaders/lighting_blinn-phong.vert", "shaders/lighting_blinn-phong.frag");
 
-	   // front face
-	   -1.0f,  1.0f,  1.0f, 0.0f, 1.0f,
-		1.0f, -1.0f,  1.0f, 1.0f, 0.0f,
-		1.0f,  1.0f,  1.0f, 1.0f, 1.0f,
-	   -1.0f,  1.0f,  1.0f, 0.0f, 1.0f,
-	   -1.0f, -1.0f,  1.0f, 0.0f, 0.0f,
-		1.0f, -1.0f,  1.0f, 1.0f, 0.0f,
+	ShaderProgram lightShader;
+	lightShader.loadShaders("shaders/bulb.vert", "shaders/bulb.frag");
 
-		// back face
-		-1.0f,  1.0f, -1.0f, 0.0f, 1.0f,
-		 1.0f, -1.0f, -1.0f, 1.0f, 0.0f,
-		 1.0f,  1.0f, -1.0f, 1.0f, 1.0f,
-		-1.0f,  1.0f, -1.0f, 0.0f, 1.0f,
-		-1.0f, -1.0f, -1.0f, 0.0f, 0.0f,
-		 1.0f, -1.0f, -1.0f, 1.0f, 0.0f,
+	// Shadow shader
+	ShaderProgram shadowShader;
+	shadowShader.loadShaders("shaders/shadow.vert", "shaders/shadow.frag");
 
-		 // left face
-		 -1.0f,  1.0f, -1.0f, 0.0f, 1.0f,
-		 -1.0f, -1.0f,  1.0f, 1.0f, 0.0f,
-		 -1.0f,  1.0f,  1.0f, 1.0f, 1.0f,
-		 -1.0f,  1.0f, -1.0f, 0.0f, 1.0f,
-		 -1.0f, -1.0f, -1.0f, 0.0f, 0.0f,
-		 -1.0f, -1.0f,  1.0f, 1.0f, 0.0f,
+	// Load meshes and textures
+	const int numModels = 6;
+	Mesh mesh[numModels];
+	Texture2D texture[numModels];
 
-		 // right face
-		  1.0f,  1.0f,  1.0f, 0.0f, 1.0f,
-		  1.0f, -1.0f, -1.0f, 1.0f, 0.0f,
-		  1.0f,  1.0f, -1.0f, 1.0f, 1.0f,
-		  1.0f,  1.0f,  1.0f, 0.0f, 1.0f,
-		  1.0f, -1.0f,  1.0f, 0.0f, 0.0f,
-		  1.0f, -1.0f, -1.0f, 1.0f, 0.0f,
+	mesh[0].loadOBJ("models/crate.obj");
+	mesh[1].loadOBJ("models/woodcrate.obj");
+	mesh[2].loadOBJ("models/robot.obj");
+	mesh[3].loadOBJ("models/floor.obj");
+	mesh[4].loadOBJ("models/bowling_pin.obj");
+	mesh[5].loadOBJ("models/bunny.obj");
 
-		  // top face
-		  -1.0f,  1.0f, -1.0f, 0.0f, 1.0f,
-		   1.0f,  1.0f,  1.0f, 1.0f, 0.0f,
-		   1.0f,  1.0f, -1.0f, 1.0f, 1.0f,
-		  -1.0f,  1.0f, -1.0f, 0.0f, 1.0f,
-		  -1.0f,  1.0f,  1.0f, 0.0f, 0.0f,
-		   1.0f,  1.0f,  1.0f, 1.0f, 0.0f,
+	texture[0].loadTexture("textures/crate.jpg", true);
+	texture[1].loadTexture("textures/woodcrate_diffuse.jpg", true);
+	texture[2].loadTexture("textures/robot_diffuse.jpg", true);
+	texture[3].loadTexture("textures/tile_floor.jpg", true);
+	texture[4].loadTexture("textures/AMF.tga", true);
+	texture[5].loadTexture("textures/bunny_diffuse.jpg", true);
 
-		   // bottom face
-		   -1.0f, -1.0f,  1.0f, 0.0f, 1.0f,
-			1.0f, -1.0f, -1.0f, 1.0f, 0.0f,
-			1.0f, -1.0f,  1.0f, 1.0f, 1.0f,
-		   -1.0f, -1.0f,  1.0f, 0.0f, 1.0f,
-		   -1.0f, -1.0f, -1.0f, 0.0f, 0.0f,
-			1.0f, -1.0f, -1.0f, 1.0f, 0.0f,
+	Mesh lightMesh;
+	lightMesh.loadOBJ("models/light.obj");
+
+	// Model positions
+	glm::vec3 modelPos[] = {
+		glm::vec3(-3.5f, 0.0f, 0.0f),	// crate1
+		glm::vec3(3.5f, 0.0f, 0.0f),	// crate2
+		glm::vec3(0.0f, 0.0f, -2.0f),	// robot
+		glm::vec3(0.0f, 0.0f, 0.0f),	// floor
+		glm::vec3(0.0f, 0.0f, 2.0f),	// pin
+		glm::vec3(-2.0f, 0.0f, 2.0f)	// bunny
 	};
 
-	float skyboxVertices[] = {
-		// positions          
-		-1.0f,  1.0f, -1.0f,
-		-1.0f, -1.0f, -1.0f,
-		 1.0f, -1.0f, -1.0f,
-		 1.0f, -1.0f, -1.0f,
-		 1.0f,  1.0f, -1.0f,
-		-1.0f,  1.0f, -1.0f,
-
-		-1.0f, -1.0f,  1.0f,
-		-1.0f, -1.0f, -1.0f,
-		-1.0f,  1.0f, -1.0f,
-		-1.0f,  1.0f, -1.0f,
-		-1.0f,  1.0f,  1.0f,
-		-1.0f, -1.0f,  1.0f,
-
-		 1.0f, -1.0f, -1.0f,
-		 1.0f, -1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		 1.0f,  1.0f, -1.0f,
-		 1.0f, -1.0f, -1.0f,
-
-		-1.0f, -1.0f,  1.0f,
-		-1.0f,  1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		 1.0f, -1.0f,  1.0f,
-		-1.0f, -1.0f,  1.0f,
-
-		-1.0f,  1.0f, -1.0f,
-		 1.0f,  1.0f, -1.0f,
-		 1.0f,  1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		-1.0f,  1.0f,  1.0f,
-		-1.0f,  1.0f, -1.0f,
-
-		-1.0f, -1.0f, -1.0f,
-		-1.0f, -1.0f,  1.0f,
-		 1.0f, -1.0f, -1.0f,
-		 1.0f, -1.0f, -1.0f,
-		-1.0f, -1.0f,  1.0f,
-		 1.0f, -1.0f,  1.0f
+	// Model scale
+	glm::vec3 modelScale[] = {
+		glm::vec3(1.0f, 1.0f, 1.0f),	// crate1
+		glm::vec3(1.0f, 1.0f, 1.0f),	// crate2
+		glm::vec3(1.0f, 1.0f, 1.0f),	// robot
+		glm::vec3(10.0f, 1.0f, 10.0f),	// floor
+		glm::vec3(0.1f, 0.1f, 0.1f),	// pin
+		glm::vec3(0.7f, 0.7f, 0.7f)		// bunny
 	};
 
-	// Cube and floor positions
-	glm::vec3 cubePos = glm::vec3(0.0f, 0.0f, 0.0f);
-	glm::vec3 floorPos = glm::vec3(0.0f, -1.0f, 0.0f);
-
-	// 2. Set up buffers on the GPU
-	GLuint VAO, VBO;
-
-	glGenVertexArrays(1, &VAO);				// Tell OpenGL to create new Vertex Array Object
-	glGenBuffers(1, &VBO);					// Generate an empty vertex buffer on the GPU
-
-	glBindVertexArray(VAO);					// Make it the current one
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);		// "bind" or set as the current buffer we are working with
-
-	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);	// copy the data from CPU to GPU
-
-	// Position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(0));	// Define a layout for the first vertex buffer "0"
-	glEnableVertexAttribArray(0);			// Enable the first attribute or attribute "0"
-
-	// Texture Coord attribute
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
-	glEnableVertexAttribArray(1);
-
-	glBindVertexArray(0);					// unbind to make sure other code doesn't change it
-
-	// skybox VAO
-	GLuint skyboxVAO, skyboxVBO;
-
-	glGenVertexArrays(1, &skyboxVAO);
-	glGenBuffers(1, &skyboxVBO);
-
-	glBindVertexArray(skyboxVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
-
-	glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
-
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-
-	glBindVertexArray(0);					// unbind to make sure other code doesn't change it
-
-	// Create a framebuffer object and attach a depth buffer to it
-	unsigned int depthMapFBO;
+	// Shadow
+	GLuint depthMapFBO;
 	glGenFramebuffers(1, &depthMapFBO);
 
-	const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
+	const unsigned int SHADOW_WIDTH = 2048, SHADOW_HEIGHT = 2048;
 
-	unsigned int depthMap;
+	GLuint depthMap;
 	glGenTextures(1, &depthMap);
 	glBindTexture(GL_TEXTURE_2D, depthMap);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
@@ -219,36 +136,8 @@ int main()
 	glReadBuffer(GL_NONE);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	ShaderProgram shaderProgram;
-	shaderProgram.loadShaders("shaders/basic.vert", "shaders/basic_part2.frag");
-
-	ShaderProgram skyboxShader;
-	skyboxShader.loadShaders("shaders/skybox.vs", "shaders/skybox.fs");
-
-	Texture2D texture1;
-	texture1.loadTexture(texture1Filename);
-
-	Texture2D texture2;
-	texture2.loadTexture(texture2Filename);
-
-	Texture2D floorTexture;
-	floorTexture.loadTexture(gridImage, true);
-
-	std::vector<std::string> faces
-	{
-		"textures/right.jpg",
-		"textures/left.jpg",
-		"textures/top.jpg",
-		"textures/bottom.jpg",
-		"textures/front.jpg",
-		"textures/back.jpg"
-	};
-	unsigned int cubemapTexture = loadCubemap(faces);
-	
-	skyboxShader.use();
-	skyboxShader.setUniform("skybox", 0);
-
 	double lastTime = glfwGetTime();
+	float angle = 0.0f;
 
 	// Rendering loop
 	while (!glfwWindowShouldClose(gWindow))
@@ -269,22 +158,7 @@ int main()
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// Wait!  Why didn't we call glUniform1i for the texture in Part 1?  The answer is OpenGL uses the 
-		// default texture unit of 0 for the first texture so if you only have one texture sampler in the fragment
-		// shader then you do not need to explicitly set the sampler by calling glUniform1i.
-
-		// --------------- Method 1 For Setting Texture Samplers -------------------------
-		// #1 Method for setting uniform samplers
-		texture1.bind(0);
-		texture2.bind(1);
-		glUniform1i(glGetUniformLocation(shaderProgram.getProgram(), "texSampler1"), 0);
-		glUniform1i(glGetUniformLocation(shaderProgram.getProgram(), "texSampler2"), 1);
-		//--------------------------------------------------------------------------------
-
 		glm::mat4 model(1.0), view(1.0), projection(1.0);
-
-		// Update the cube position (don't really need to do this every frame because it isn't changing)
-		model = glm::translate(model, cubePos);
 
 		// Create the View matrix
 		view = fpsCamera.getViewMatrix();
@@ -292,50 +166,105 @@ int main()
 		// Create the projection matrix
 		projection = glm::perspective(glm::radians(fpsCamera.getFOV()), (float)gWindowWidth / (float)gWindowHeight, 0.1f, 100.0f);
 
+		// update the view (camera) position
+		glm::vec3 viewPos;
+		viewPos.x = fpsCamera.getPosition().x;
+		viewPos.y = fpsCamera.getPosition().y;
+		viewPos.z = fpsCamera.getPosition().z;
+
+		// The Light
+		glm::vec3 lightPos(0.0f, 5.0f, 10.0f);
+		glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
+
+		// Move the light
+		angle += (float)deltaTime * 50.0f;
+		lightPos.x = 8.0f * sinf(glm::radians(angle));  // slide back and forth
+
+		// 1. render depth of scene to texture (from light's perspective)
+		glm::mat4 lightProjection, lightView;
+		glm::mat4 lightSpaceMatrix;
+		float near_plane = 1.0f, far_plane = 30.0f;
+		lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+		lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+		lightSpaceMatrix = lightProjection * lightView;
+
+		// Render the scene to the depth buffer (shadow map)
+		shadowShader.use();
+		shadowShader.setUniform("lightSpaceMatrix", lightSpaceMatrix);
+
+		glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+		glClear(GL_DEPTH_BUFFER_BIT);
+
+		// Render the scene
+		for (int i = 0; i < numModels; i++)
+		{
+			model = glm::translate(glm::mat4(1.0), modelPos[i]) * glm::scale(glm::mat4(1.0), modelScale[i]);
+			shadowShader.setUniform("model", model);
+			texture[i].bind(0);		// set the texture before drawing.
+			mesh[i].draw();
+			texture[i].unbind(0);
+		}
+
+		// Render the light bulb geometry
+		model = glm::translate(glm::mat4(1.0), lightPos);
+		lightShader.use();
+		lightShader.setUniform("lightColor", lightColor);
+		lightShader.setUniform("model", model);
+		lightShader.setUniform("view", view);
+		lightShader.setUniform("projection", projection);
+		lightMesh.draw();
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		// reset viewport
+		glViewport(0, 0, gWindowWidth, gWindowHeight);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 		// Render the scene
 		// Must be called BEFORE setting uniforms because setting uniforms is done
 		// on the currently active shader program.
 		shaderProgram.use();
 
-		// Pass the matrices to the shader
-		shaderProgram.setUniform("model", model);
+	    // Simple light
 		shaderProgram.setUniform("view", view);
 		shaderProgram.setUniform("projection", projection);
+		shaderProgram.setUniform("viewPos", viewPos);
+		shaderProgram.setUniform("lightPos", lightPos);
+		shaderProgram.setUniform("lightColor", lightColor);
 
-		// ... draw rest of the scene
-		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		shaderProgram.setUniform("lightSpaceMatrix", lightSpaceMatrix);
 
-		// Position and render the floor (a squashed and scaled cube!)
-		// Make the floor texture "active" in the shaders
-		floorTexture.bind(0);
+		// Render the scene
+		for (int i = 0; i < numModels; i++)
+		{
+			model = glm::translate(glm::mat4(1.0), modelPos[i]) * glm::scale(glm::mat4(1.0), modelScale[i]);
+			shaderProgram.setUniform("model", model);
 
-		model = glm::translate(model, floorPos) * glm::scale(model, glm::vec3(10.0f, 0.01f, 10.0f));
+			// Set material properties
+			shaderProgram.setUniform("material.ambient", glm::vec3(0.1f, 0.1f, 0.1f));
+			shaderProgram.setUniformSampler("material.diffuseMap", 0);
+			shaderProgram.setUniform("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+			shaderProgram.setUniform("material.shininess", 32.0f);
 
-		// Send the model matrix for the floor to the vertex shader
-		shaderProgram.setUniform("model", model);
+			texture[i].bind(0);		// set the texture before drawing.
+	
+			glActiveTexture(GL_TEXTURE0 + 2);
+			glBindTexture(GL_TEXTURE_2D, depthMap);
+			shaderProgram.setUniform("shadowMap", 2);
+			
+			mesh[i].draw();			// Render the OBJ mesh
+			texture[i].unbind(0);
+		}
 
-		// Draw the floor
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-
-		glBindVertexArray(0);
-
-		// skybox cube
-		glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
-		skyboxShader.use();
-		skyboxShader.setUniform("view", glm::mat4(glm::mat3(view)));
-		skyboxShader.setUniform("projection", projection);
-
-		glBindVertexArray(skyboxVAO);
-
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
-		
-		// Draw the skybox
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-
-		glBindVertexArray(0);
-		glDepthFunc(GL_LESS); // set depth function back to default
+		// Render the light bulb geometry
+		model = glm::translate(glm::mat4(1.0), lightPos);
+		lightShader.use();
+		lightShader.setUniform("lightColor", lightColor);
+		lightShader.setUniform("model", model);
+		lightShader.setUniform("view", view);
+		lightShader.setUniform("projection", projection);
+		lightMesh.draw();
 
 		// Swap front and back buffers
 		glfwSwapBuffers(gWindow);
@@ -343,18 +272,20 @@ int main()
 		lastTime = currentTime;
 	}
 
-	// Clean up
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
+	texture[0].destroy();
+	texture[1].destroy();
+	texture[2].destroy();
+	texture[3].destroy();
+	texture[4].destroy();
+	texture[5].destroy();
 
-	glDeleteVertexArrays(1, &skyboxVAO);
-	glDeleteBuffers(1, &skyboxVBO);
+	mesh[0].destroy();
+	mesh[1].destroy();
+	mesh[2].destroy();
+	mesh[3].destroy();
+	mesh[4].destroy();
+	mesh[5].destroy();
 
-	texture1.destroy();
-	texture2.destroy();
-	floorTexture.destroy();
-
-	skyboxShader.destroy();
 	shaderProgram.destroy();
 
 	glfwTerminate();
@@ -512,46 +443,4 @@ void showFPS(GLFWwindow* window) {
 	}
 
 	frameCount++;
-}
-
-// loads a cubemap texture from 6 individual texture faces
-// order:
-// +X (right)
-// -X (left)
-// +Y (top)
-// -Y (bottom)
-// +Z (front) 
-// -Z (back)
-// -------------------------------------------------------
-unsigned int loadCubemap(std::vector<std::string> faces)
-{
-	unsigned int textureID;
-	glGenTextures(1, &textureID);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
-
-	int width, height, nrChannels;
-	for (unsigned int i = 0; i < faces.size(); i++)
-	{
-		stbi_set_flip_vertically_on_load(false);
-		unsigned char* data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
-		if (data)
-		{
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-			stbi_image_free(data);
-		}
-		else
-		{
-			std::cout << "Cubemap texture failed to load at path: " << faces[i] << std::endl;
-			stbi_image_free(data);
-		}
-	}
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	return textureID;
 }
