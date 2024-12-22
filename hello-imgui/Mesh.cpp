@@ -52,7 +52,7 @@ bool Mesh::loadOBJ(const std::string& filename)
 	tinyobj::ObjReader reader;
 
 	tinyobj::ObjReaderConfig reader_config;
-	reader_config.mtl_search_path = "./"; // Path to material files
+	reader_config.mtl_search_path = "./models"; // Path to material files
 
 	if (!reader.ParseFromFile(filename, reader_config)) {
 		if (!reader.Error().empty()) {

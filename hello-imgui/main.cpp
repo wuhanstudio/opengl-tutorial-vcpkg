@@ -25,6 +25,7 @@
 #include "Texture2D.h"
 #include "Camera.h"
 #include "Mesh.h"
+#include "Skybox.h"
 
 const char* glsl_version = "#version 150";
 
@@ -144,6 +145,22 @@ int main()
 		glm::vec3(0.7f, 0.7f, 0.7f)		// bunny
 	};
 
+	// Skybox
+	ShaderProgram skyboxShader;
+	skyboxShader.loadShaders("shaders/skybox.vert", "shaders/skybox.frag");
+
+	skyboxShader.use();
+	skyboxShader.setUniform("skybox", 0);
+
+	Skybox skybox({
+		"textures/skybox/right.jpg",
+		"textures/skybox/left.jpg",
+		"textures/skybox/top.jpg",
+		"textures/skybox/bottom.jpg",
+		"textures/skybox/front.jpg",
+		"textures/skybox/back.jpg"
+		});
+
 	lastTime = glfwGetTime();
 	float angle = 0.0f;
 
@@ -262,13 +279,6 @@ int main()
 		shaderProgram.setUniform("light.diffuse", lightColor);
 		shaderProgram.setUniform("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
 
-	    // Simple light
-		//shaderProgram.setUniform("view", view);
-		//shaderProgram.setUniform("projection", projection);
-		//shaderProgram.setUniform("viewPos", viewPos);
-		//shaderProgram.setUniform("lightPos", lightPos);
-		//shaderProgram.setUniform("lightColor", lightColor);
-
 		// Render the scene
 		for (int i = 0; i < numModels; i++)
 		{
@@ -295,6 +305,8 @@ int main()
 		lightShader.setUniform("projection", projection);
 		lightMesh.draw();
 
+		skybox.render(skyboxShader, view, projection);
+
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 		// Swap front and back buffers
@@ -316,7 +328,9 @@ int main()
 	mesh[3].destroy();
 	mesh[4].destroy();
 	mesh[5].destroy();
+	lightMesh.destroy();
 
+	skyboxShader.destroy();
 	shaderProgram.destroy();
 
 	// Cleanup
@@ -502,7 +516,7 @@ void showFPS(GLFWwindow* window) {
 		double msPerFrame = 1000.0 / fps;
 
 		char title[80];
-		std::snprintf(title, sizeof(title), "Hello Texture @ fps: %.2f, ms/frame: %.2f", fps, msPerFrame);
+		std::snprintf(title, sizeof(title), "Hello ImGUI @ fps: %.2f, ms/frame: %.2f", fps, msPerFrame);
 		glfwSetWindowTitle(window, title);
 
 		frameCount = 0;
