@@ -132,7 +132,7 @@ void  ShaderProgram::checkCompileErrors(GLuint shader, ShaderType type)
 			string errorLog(length, ' ');	// Resize and fill with space character
 			glGetProgramInfoLog(mHandle, length, &length, &errorLog[0]);
 
-			fmt::println("Error!Shader failed to compile. % s", errorLog);
+			fmt::println("Error!Shader failed to compile. {}", errorLog);
 		}
 	}
 	else
@@ -147,7 +147,7 @@ void  ShaderProgram::checkCompileErrors(GLuint shader, ShaderType type)
 			string errorLog(length, ' ');  // Resize and fill with space character
 			glGetShaderInfoLog(shader, length, &length, &errorLog[0]);
 
-			fmt::println("Error!Shader failed to compile. % s", errorLog);
+			fmt::println("Error!Shader failed to compile. {}", errorLog);
 		}
 	}
 

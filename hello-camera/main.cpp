@@ -18,7 +18,7 @@
 #include "Texture2D.h"
 #include "Camera.h"
 
-// Global Variables// Set to true to enable fullscreen
+// Set to true to enable fullscreen
 bool FULLSCREEN = false;
 
 GLFWwindow* gWindow = NULL;

@@ -45,13 +45,10 @@ void Mesh::destroy()
 bool Mesh::loadOBJ(const std::string& filename)
 {
 	std::vector<unsigned int> vertexIndices, uvIndices;
-	std::vector<glm::vec3> tempVertices;
-	std::vector<glm::vec2> tempUVs;
 
 	tinyobj::ObjReader reader;
-
 	tinyobj::ObjReaderConfig reader_config;
-	reader_config.mtl_search_path = "./"; // Path to material files
+	reader_config.mtl_search_path = "./models"; // Path to material files
 
 	if (!reader.ParseFromFile(filename, reader_config)) {
 		if (!reader.Error().empty()) {
@@ -87,7 +84,7 @@ bool Mesh::loadOBJ(const std::string& filename)
 
 				glm::vec3 vertex(vx, vy, vz);
 
-				// Check if `normal_index` is zero or positive. negative = no normal data
+				// Check if normal data exists
 				if (idx.normal_index >= 0) {
 					tinyobj::real_t nx = attrib.normals[3 * size_t(idx.normal_index) + 0];
 					tinyobj::real_t ny = attrib.normals[3 * size_t(idx.normal_index) + 1];
@@ -95,7 +92,7 @@ bool Mesh::loadOBJ(const std::string& filename)
 				}
 
 				glm::vec2 uv;
-				// Check if `texcoord_index` is zero or positive. negative = no texcoord data
+				// Check if texcoord data exists
 				if (idx.texcoord_index >= 0) {
 					tinyobj::real_t tx = attrib.texcoords[2 * size_t(idx.texcoord_index) + 0];
 					tinyobj::real_t ty = attrib.texcoords[2 * size_t(idx.texcoord_index) + 1];
@@ -103,34 +100,13 @@ bool Mesh::loadOBJ(const std::string& filename)
 					uv.t = ty;
 				}
 
+				// Save the OBJ data
 				meshVertex.position = vertex;
 				meshVertex.texCoords = uv;
 				mVertices.push_back(meshVertex);
-
-				// Optional: vertex colors
-				// tinyobj::real_t red   = attrib.colors[3*size_t(idx.vertex_index)+0];
-				// tinyobj::real_t green = attrib.colors[3*size_t(idx.vertex_index)+1];
-				// tinyobj::real_t blue  = attrib.colors[3*size_t(idx.vertex_index)+2];
 			}
 			index_offset += fv;
-
-			// per-face material
-			//shapes[s].mesh.material_ids[f];
 		}
-	}
-
-	// For each vertex of each triangle
-	for (unsigned int i = 0; i < vertexIndices.size(); i++)
-	{
-		// Get the attributes using the indices
-		glm::vec3 vertex = tempVertices[vertexIndices[i] - 1];
-		glm::vec2 uv = tempUVs[uvIndices[i] - 1];
-
-		Vertex meshVertex;
-		meshVertex.position = vertex;
-		meshVertex.texCoords = uv;
-
-		mVertices.push_back(meshVertex);
 	}
 
 	// Create and initialize the buffers

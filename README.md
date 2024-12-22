@@ -18,8 +18,11 @@
 
 > vcpkg is a free and open-source C/C++ package manager maintained by Microsoft and the C++ community.
 
-- Cross Platform (Windows / Linux)
+The source code is based on [Learn OpenGL](https://learnopengl.com/Getting-started/OpenGL) and the [Udemy course](https://www.udemy.com/course/learn-modern-opengl-programming/), with improvements on memory safety and:
+
+- Cross Platform (Windows / Linux) Support
 - Automatic library management via vcpkg
+- Add ImGUI to interact with OpenGL
 
 
 
@@ -247,6 +250,23 @@ stbi_image_free(imageData);
 glBindTexture(GL_TEXTURE_2D, 0); // unbind texture when done so we don't accidentally mess up our mTexture
 ```
 
+Fragment Shader
+
+```
+#version 330 core
+
+in vec2 TexCoord;
+out vec4 frag_color;
+
+uniform sampler2D texSampler1;
+uniform sampler2D texSampler2;
+
+void main()
+{
+	frag_color = mix(texture(texSampler1, TexCoord), texture(texSampler2, TexCoord), 0.2);
+}
+```
+
 
 
 ## 05 Hello Camera
@@ -272,12 +292,6 @@ glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 Then we can change the view in vertex shader.
 
 ```
-//-----------------------------------------------------------------------------
-// basic.vert by Steve Jones 
-// Copyright (c) 2015-2019 Game Institute. All Rights Reserved.
-//
-// Vertex shader
-//-----------------------------------------------------------------------------
 #version 330 core
 
 layout (location = 0) in vec3 pos;  // in local coords
@@ -300,6 +314,8 @@ void main()
 
 ## 06 Hello Object
 
+This example use the library [TinyOBJLoader](https://github.com/tinyobjloader/tinyobjloader) to load 3D models.
+
 ```
 $ cd hello-object
 $ cmake -B build --preset vcpkg
@@ -307,11 +323,108 @@ $ cmake --build build
 $ ./build/hello-object
 ```
 
+![](docs/hello-object.gif)
+
+We load the OBJ model using `tinyobj::ObjReader`:
+
+```
+//-----------------------------------------------------------------------------
+// Loads a Wavefront OBJ model
+//-----------------------------------------------------------------------------
+bool Mesh::loadOBJ(const std::string& filename)
+{
+	std::vector<unsigned int> vertexIndices, uvIndices;
+
+    tinyobj::ObjReader reader;
+	tinyobj::ObjReaderConfig reader_config;
+	reader_config.mtl_search_path = "./models"; // Path to material files
+
+	if (!reader.ParseFromFile(filename, reader_config)) {
+		if (!reader.Error().empty()) {
+			fmt::println("TinyObjReader: {}", reader.Error());
+		}
+		return false;
+	}
+
+	if (!reader.Warning().empty()) {
+		fmt::println("TinyObjReader: {}", reader.Warning());
+	}
+
+	auto& attrib = reader.GetAttrib();
+	auto& shapes = reader.GetShapes();
+	auto& materials = reader.GetMaterials();
+
+	// Loop over shapes
+	for (size_t s = 0; s < shapes.size(); s++) {
+		// Loop over faces (polygon)
+		size_t index_offset = 0;
+		for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) {
+			size_t fv = size_t(shapes[s].mesh.num_face_vertices[f]);
+
+			// Loop over vertices in the face.
+			for (size_t v = 0; v < fv; v++) {
+				Vertex meshVertex;
+
+				// access to vertex
+				tinyobj::index_t idx = shapes[s].mesh.indices[index_offset + v];
+				tinyobj::real_t vx = attrib.vertices[3 * size_t(idx.vertex_index) + 0];
+				tinyobj::real_t vy = attrib.vertices[3 * size_t(idx.vertex_index) + 1];
+				tinyobj::real_t vz = attrib.vertices[3 * size_t(idx.vertex_index) + 2];
+
+				glm::vec3 vertex(vx, vy, vz);
+
+				// Check if normal data exists
+				if (idx.normal_index >= 0) {
+					tinyobj::real_t nx = attrib.normals[3 * size_t(idx.normal_index) + 0];
+					tinyobj::real_t ny = attrib.normals[3 * size_t(idx.normal_index) + 1];
+					tinyobj::real_t nz = attrib.normals[3 * size_t(idx.normal_index) + 2];
+				}
+
+				glm::vec2 uv;
+				// Check if texcoord data exists
+				if (idx.texcoord_index >= 0) {
+					tinyobj::real_t tx = attrib.texcoords[2 * size_t(idx.texcoord_index) + 0];
+					tinyobj::real_t ty = attrib.texcoords[2 * size_t(idx.texcoord_index) + 1];
+					uv.s = tx;
+					uv.t = ty;
+				}
+				
+				// Save the OBJ data
+				meshVertex.position = vertex;
+				meshVertex.texCoords = uv;
+				mVertices.push_back(meshVertex);
+			}
+			index_offset += fv;
+		}
+	}
+
+	// Create and initialize the buffers
+	initBuffers();
+
+	return (mLoaded = true);
+}
+```
+
+And then render each object in the scene:
+
+```
+// Render the scene
+for (int i = 0; i < numModels; i++)
+{
+    model = glm::translate(glm::mat4(1.0), modelPos[i]) * glm::scale(glm::mat4(1.0), modelScale[i]);
+    shaderProgram.setUniform("model", model);
+
+    texture[i].bind(0);		// set the texture before drawing.
+    mesh[i].draw();			// Render the OBJ mesh
+    texture[i].unbind(0);
+}
+```
+
 
 
 ## 07 Hello Skybox
 
-- Coming Soon
+
 
 
 
@@ -330,11 +443,13 @@ $ ./build/hello-lighting
 
 ## 09 Hello Shadow
 
-- Coming Soon
+
 
 
 
 ## 10 Hello ImGUI
+
+
 
 ```
 $ cd hello-imgui
