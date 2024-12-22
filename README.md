@@ -479,7 +479,7 @@ for (int i = 0; i < numModels; i++)
 
 ## 08 Hello Lighting
 
-
+This example adds a point light to the scene.
 
 ```
 $ cd hello-lighting
@@ -488,7 +488,90 @@ $ cmake --build build
 $ ./build/hello-lighting
 ```
 
+![](docs/hello-lighting.gif)
 
+To add lighting, we also load the normal from OBJ files.
+
+```
+// Check if normal data exists
+if (idx.normal_index >= 0) {
+    tinyobj::real_t nx = attrib.normals[3 * size_t(idx.normal_index) + 0];
+    tinyobj::real_t ny = attrib.normals[3 * size_t(idx.normal_index) + 1];
+    tinyobj::real_t nz = attrib.normals[3 * size_t(idx.normal_index) + 2];
+
+    glm::vec3 normal(nx, ny, nz);
+    meshVertex.normal = normal;
+}
+```
+
+Then we pass the normal to the vertex shader and fragment shader.
+
+```
+#version 330 core
+
+layout (location = 0) in vec3 pos;			
+layout (location = 1) in vec3 normal;	
+layout (location = 2) in vec2 texCoord;
+
+uniform mat4 model;			// model matrix
+uniform mat4 view;			// view matrix
+uniform mat4 projection;	// projection matrix
+
+out vec3 FragPos;
+out vec3 Normal;
+out vec2 TexCoord;
+
+void main()
+{
+    FragPos = vec3(model * vec4(pos, 1.0f));			// vertex position in world space
+	Normal = normal;
+	
+	TexCoord = texCoord;
+
+	gl_Position = projection * view *  model * vec4(pos, 1.0f);
+}
+```
+
+The blinn phong fracment shader:
+
+```
+#version 330 core
+
+in vec2 TexCoord;
+in vec3 FragPos;
+in vec3 Normal;
+
+uniform sampler2D texture_map;
+uniform vec3 lightPos;			// for diffuse
+uniform vec3 lightColor;		// for diffuse
+uniform vec3 viewPos;			// for specular
+
+out vec4 frag_color;
+
+void main()
+{
+    // Ambient ---------------------------------------------------------
+    float ambientFactor = 0.1f;
+    vec3 ambient = lightColor * ambientFactor;
+
+    // Diffuse ------------------------------------
+    vec3 normal = normalize(Normal);
+    vec3 lightDir = normalize(lightPos - FragPos);
+    float NDotL = max(dot(normal, lightDir), 0.0);
+    vec3 diffuse = lightColor * NDotL;
+
+    // Specular (Blinn-Phong)-------------------------------------------
+	float specularFactor = 0.8f;
+	float shininess = 32.0f;
+	vec3 viewDir = normalize(viewPos - FragPos);
+	vec3 halfDir = normalize(lightDir + viewDir);
+	float NDotH = max(dot(normal, halfDir), 0.0);
+	vec3 specular = lightColor * specularFactor * pow(NDotH, shininess);
+
+	vec4 texel = texture(texture_map, TexCoord);
+    frag_color = vec4(ambient + diffuse + specular, 1.0f) * texel;
+}
+```
 
 
 

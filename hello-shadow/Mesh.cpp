@@ -109,31 +109,10 @@ bool Mesh::loadOBJ(const std::string& filename)
 				}
 
 				mVertices.push_back(meshVertex);
-
-				// Optional: vertex colors
-				// tinyobj::real_t red   = attrib.colors[3*size_t(idx.vertex_index)+0];
-				// tinyobj::real_t green = attrib.colors[3*size_t(idx.vertex_index)+1];
-				// tinyobj::real_t blue  = attrib.colors[3*size_t(idx.vertex_index)+2];
 			}
 			index_offset += fv;
 
-			// per-face material
-			//shapes[s].mesh.material_ids[f];
 		}
-	}
-
-	// For each vertex of each triangle
-	for (unsigned int i = 0; i < vertexIndices.size(); i++)
-	{
-		// Get the attributes using the indices
-		glm::vec3 vertex = tempVertices[vertexIndices[i] - 1];
-		glm::vec2 uv = tempUVs[uvIndices[i] - 1];
-
-		Vertex meshVertex;
-		meshVertex.position = vertex;
-		meshVertex.texCoords = uv;
-
-		mVertices.push_back(meshVertex);
 	}
 
 	// Create and initialize the buffers
