@@ -39,7 +39,6 @@ const int gWindowHeightFull = 1200;
 bool gWireframe = false;
 
 const std::string texture1Filename = "textures/crate.jpg";
-const std::string texture2Filename = "textures/airplane.png";
 const std::string gridImage = "textures/grid.jpg";
 
 FPSCamera fpsCamera(glm::vec3(0.0f, 5.0f, 15.0f), -180, -10);
@@ -154,9 +153,6 @@ int main()
 	Texture2D texture1;
 	texture1.loadTexture(texture1Filename);
 
-	Texture2D texture2;
-	texture2.loadTexture(texture2Filename);
-
 	Texture2D floorTexture;
 	floorTexture.loadTexture(gridImage, true);
 
@@ -195,7 +191,6 @@ int main()
 		// shader then you do not need to explicitly set the sampler by calling glUniform1i.
 
 		texture1.bind(0);
-		texture2.bind(1);
 		glUniform1i(glGetUniformLocation(shaderProgram.getProgram(), "texSampler1"), 0);
 		glUniform1i(glGetUniformLocation(shaderProgram.getProgram(), "texSampler2"), 1);
 
@@ -253,7 +248,6 @@ int main()
 	glDeleteBuffers(1, &VBO);
 
 	texture1.destroy();
-	texture2.destroy();
 	floorTexture.destroy();
 
 	skybox.destroy();
