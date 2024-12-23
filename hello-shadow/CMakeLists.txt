@@ -11,7 +11,7 @@ find_package(glfw3 CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
 find_package(Stb REQUIRED)
 
-add_executable(hello-shadow main.cpp ShaderProgram.cpp Texture2D.cpp Camera.cpp Mesh.cpp)
+add_executable(hello-shadow main.cpp ShaderProgram.cpp Texture2D.cpp Camera.cpp Mesh.cpp Skybox.cpp)
 
 target_include_directories(hello-shadow PRIVATE ${Stb_INCLUDE_DIR})
 target_link_libraries(hello-shadow PRIVATE fmt::fmt glfw glad::glad glm::glm)

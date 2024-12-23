@@ -198,7 +198,7 @@ bool initOpenGL()
 	return true;
 }
 
-static void showFPS(GLFWwindow* window) {
+void showFPS(GLFWwindow* window) {
 	static double previousSeconds = 0.0;
 	static int frameCount = 0;
 	double elapsedSeconds;
