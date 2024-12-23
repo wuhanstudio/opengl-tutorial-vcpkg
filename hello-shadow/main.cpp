@@ -64,7 +64,6 @@ int main()
 
 	// Light shader
 	ShaderProgram shaderProgram;
-	shaderProgram.loadShaders("shaders/lighting_phong.vert", "shaders/lighting_phong.frag");
 	shaderProgram.loadShaders("shaders/lighting_blinn-phong.vert", "shaders/lighting_blinn-phong.frag");
 
 	ShaderProgram lightShader;
@@ -221,6 +220,7 @@ int main()
 		{
 			model = glm::translate(glm::mat4(1.0), modelPos[i]) * glm::scale(glm::mat4(1.0), modelScale[i]);
 			shadowShader.setUniform("model", model);
+
 			texture[i].bind(0);		// set the texture before drawing.
 			mesh[i].draw();
 			texture[i].unbind(0);
@@ -265,12 +265,6 @@ int main()
 			model = glm::translate(glm::mat4(1.0), modelPos[i]) * glm::scale(glm::mat4(1.0), modelScale[i]);
 			shaderProgram.setUniform("model", model);
 
-			// Set material properties
-			shaderProgram.setUniform("material.ambient", glm::vec3(0.1f, 0.1f, 0.1f));
-			shaderProgram.setUniformSampler("material.diffuseMap", 0);
-			shaderProgram.setUniform("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
-			shaderProgram.setUniform("material.shininess", 32.0f);
-
 			texture[i].bind(0);		// set the texture before drawing.
 	
 			// Render the shadow
@@ -312,6 +306,8 @@ int main()
 	mesh[3].destroy();
 	mesh[4].destroy();
 	mesh[5].destroy();
+
+	lightMesh.destroy();
 
 	shaderProgram.destroy();
 	shadowShader.destroy();

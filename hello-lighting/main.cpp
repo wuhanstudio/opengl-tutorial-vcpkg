@@ -231,6 +231,7 @@ int main()
 	mesh[3].destroy();
 	mesh[4].destroy();
 	mesh[5].destroy();
+	lightMesh.destroy();
 
 	shaderProgram.destroy();
 	skybox.destroy();

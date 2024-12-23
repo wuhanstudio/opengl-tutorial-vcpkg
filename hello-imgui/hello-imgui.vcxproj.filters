@@ -109,12 +109,6 @@
     <None Include="shaders\bulb.vert">
       <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="shaders\lighting_blinn-phong.frag">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="shaders\lighting_blinn-phong.vert">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
     <None Include="shaders\lighting_dir.frag">
       <Filter>Resource Files\Shaders</Filter>
     </None>
@@ -127,18 +121,6 @@
     <None Include="shaders\lighting_dir_point_spot.vert">
       <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="shaders\lighting_phong.frag">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="shaders\lighting_phong.vert">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="shaders\lighting_phong_materials.frag">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="shaders\lighting_phong_materials.vert">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
     <None Include="shaders\lighting_point.frag">
       <Filter>Resource Files\Shaders</Filter>
     </None>
@@ -149,6 +131,24 @@
       <Filter>Resource Files\Shaders</Filter>
     </None>
     <None Include="shaders\lighting_spot.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="shaders\shadow.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="shaders\shadow.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="shaders\skybox.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="shaders\skybox.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="shaders\lighting_phong_materials.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="shaders\lighting_phong_materials.vert">
       <Filter>Resource Files\Shaders</Filter>
     </None>
   </ItemGroup>

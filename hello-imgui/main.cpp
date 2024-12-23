@@ -30,7 +30,7 @@
 const char* glsl_version = "#version 150";
 
 // // Set to true to enable fullscreen
-bool FULLSCREEN = true;
+bool FULLSCREEN = false;
 
 GLFWwindow* gWindow = NULL;
 const char* APP_TITLE = "Introduction to Modern OpenGL - Hello ImGUI";
@@ -51,10 +51,6 @@ double lastMouseX, lastMouseY;
 double lastTime = glfwGetTime();
 double deltaTime = 0.0;
 bool draging = false;
-
-const std::string texture1Filename = "textures/crate.jpg";
-const std::string texture2Filename = "textures/airplane.png";
-const std::string gridImage = "textures/grid.jpg";
 
 FPSCamera fpsCamera(glm::vec3(0.0f, 5.0f, 20.0f), -180, -10);
 const double ZOOM_SENSITIVITY = -3.0;
@@ -102,14 +98,15 @@ int main()
 
 	// Load meshes and textures
 	ShaderProgram shaderProgram;
+	shaderProgram.loadShaders("shaders/lighting_phong_materials.vert", "shaders/lighting_phong_materials.frag");
 
 	// Light shader
-	shaderProgram.loadShaders("shaders/lighting_phong_materials.vert", "shaders/lighting_phong_materials.frag");
-	//shaderProgram.loadShaders("shaders/lighting_phong.vert", "shaders/lighting_phong.frag");
-	//shaderProgram.loadShaders("shaders/lighting_blinn-phong.vert", "shaders/lighting_blinn-phong.frag");
-
 	ShaderProgram lightShader;
 	lightShader.loadShaders("shaders/bulb.vert", "shaders/bulb.frag");
+
+	// Shadow shader
+	ShaderProgram shadowShader;
+	shadowShader.loadShaders("shaders/shadow.vert", "shaders/shadow.frag");
 
 	// Load meshes and textures
 	const int numModels = 6;
@@ -152,6 +149,31 @@ int main()
 		glm::vec3(0.1f, 0.1f, 0.1f),	// pin
 		glm::vec3(0.7f, 0.7f, 0.7f)		// bunny
 	};
+
+
+	// Shadow
+	GLuint depthMapFBO;
+	glGenFramebuffers(1, &depthMapFBO);
+
+	const unsigned int SHADOW_WIDTH = 2048, SHADOW_HEIGHT = 2048;
+
+	GLuint depthMap;
+	glGenTextures(1, &depthMap);
+	glBindTexture(GL_TEXTURE_2D, depthMap);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
+		SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	// Skybox
 	ShaderProgram skyboxShader;
@@ -239,12 +261,6 @@ int main()
 		int display_w, display_h;
 		glfwGetFramebufferSize(gWindow, &display_w, &display_h);
 
-		// reset viewport
-		if (FULLSCREEN)
-			glViewport(0, 0, gWindowWidthFull, gWindowHeightFull);
-		else
-			glViewport(0, 0, gWindowWidth, gWindowHeight);
-
 		io.MouseDrawCursor = true;
 		if (draging && (!io.WantCaptureMouse) ) {
 			glfwSetInputMode(gWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -271,12 +287,58 @@ int main()
 		viewPos.z = fpsCamera.getPosition().z;
 
 		// The Light
-		glm::vec3 lightPos(0.0f, 1.0f, 10.0f);
+		glm::vec3 lightPos(0.0f, 5.0f, 10.0f);
 		glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
 
 		// Move the light
 		angle += (float)deltaLightTime * 50.0f;
 		lightPos.x = 8.0f * sinf(glm::radians(angle));  // slide back and forth
+
+		// 1. render depth of scene to texture (from light's perspective)
+		glm::mat4 lightProjection, lightView;
+		glm::mat4 lightSpaceMatrix;
+		float near_plane = 1.0f, far_plane = 30.0f;
+		lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+		lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+		lightSpaceMatrix = lightProjection * lightView;
+
+		// Render the scene to the depth buffer (shadow map)
+		shadowShader.use();
+		shadowShader.setUniform("lightSpaceMatrix", lightSpaceMatrix);
+
+		glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+		glClear(GL_DEPTH_BUFFER_BIT);
+
+		// Render the scene
+		for (int i = 0; i < numModels; i++)
+		{
+			model = glm::translate(glm::mat4(1.0), modelPos[i]) * glm::scale(glm::mat4(1.0), modelScale[i]);
+			shadowShader.setUniform("model", model);
+
+			texture[i].bind(0);		// set the texture before drawing.
+			mesh[i].draw();
+			texture[i].unbind(0);
+		}
+
+		// Render the light bulb geometry
+		model = glm::translate(glm::mat4(1.0), lightPos);
+		lightShader.use();
+		lightShader.setUniform("lightColor", lightColor);
+		lightShader.setUniform("model", model);
+		lightShader.setUniform("view", view);
+		lightShader.setUniform("projection", projection);
+		lightMesh.draw();
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		// reset viewport
+		if (FULLSCREEN)
+			glViewport(0, 0, gWindowWidthFull, gWindowHeightFull);
+		else
+			glViewport(0, 0, gWindowWidth, gWindowHeight);
+
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Render the scene
 		// Must be called BEFORE setting uniforms because setting uniforms is done
@@ -287,10 +349,13 @@ int main()
 		shaderProgram.setUniform("view", view);
 		shaderProgram.setUniform("projection", projection);
 		shaderProgram.setUniform("viewPos", viewPos);
+
 		shaderProgram.setUniform("light.position", lightPos);
 		shaderProgram.setUniform("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
 		shaderProgram.setUniform("light.diffuse", lightColor);
 		shaderProgram.setUniform("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+
+		shaderProgram.setUniform("lightSpaceMatrix", lightSpaceMatrix);
 
 		// Render the scene
 		for (int i = 0; i < numModels; i++)
@@ -305,6 +370,12 @@ int main()
 			shaderProgram.setUniform("material.shininess", 32.0f);
 
 			texture[i].bind(0);		// set the texture before drawing.
+
+			// Render the shadow
+			glActiveTexture(GL_TEXTURE0 + 2);
+			glBindTexture(GL_TEXTURE_2D, depthMap);
+			shaderProgram.setUniform("shadowMap", 2);
+
 			mesh[i].draw();			// Render the OBJ mesh
 			texture[i].unbind(0);
 		}
@@ -343,8 +414,14 @@ int main()
 	mesh[5].destroy();
 	lightMesh.destroy();
 
-	skyboxShader.destroy();
 	shaderProgram.destroy();
+	shadowShader.destroy();
+	skyboxShader.destroy();
+	
+	skybox.destroy();
+
+	glDeleteFramebuffers(1, &depthMapFBO);
+	glDeleteTextures(1, &depthMap);
 
 	// Cleanup
 	ImGui_ImplOpenGL3_Shutdown();

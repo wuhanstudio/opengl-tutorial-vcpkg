@@ -190,20 +190,20 @@
     </None>
     <None Include="shaders\bulb.frag" />
     <None Include="shaders\bulb.vert" />
-    <None Include="shaders\lighting_blinn-phong.frag" />
-    <None Include="shaders\lighting_blinn-phong.vert" />
     <None Include="shaders\lighting_dir.frag" />
     <None Include="shaders\lighting_dir.vert" />
     <None Include="shaders\lighting_dir_point_spot.frag" />
     <None Include="shaders\lighting_dir_point_spot.vert" />
-    <None Include="shaders\lighting_phong.frag" />
-    <None Include="shaders\lighting_phong.vert" />
     <None Include="shaders\lighting_phong_materials.frag" />
     <None Include="shaders\lighting_phong_materials.vert" />
     <None Include="shaders\lighting_point.frag" />
     <None Include="shaders\lighting_point.vert" />
     <None Include="shaders\lighting_spot.frag" />
     <None Include="shaders\lighting_spot.vert" />
+    <None Include="shaders\shadow.frag" />
+    <None Include="shaders\shadow.vert" />
+    <None Include="shaders\skybox.frag" />
+    <None Include="shaders\skybox.vert" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="models\barrel.obj">

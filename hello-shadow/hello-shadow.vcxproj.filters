@@ -70,12 +70,6 @@
     <None Include="shaders\lighting_blinn-phong.vert">
       <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="shaders\lighting_phong.frag">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="shaders\lighting_phong.vert">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
     <None Include="shaders\shadow.frag">
       <Filter>Resource Files\Shaders</Filter>
     </None>

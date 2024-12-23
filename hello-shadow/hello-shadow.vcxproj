@@ -151,8 +151,6 @@
     <None Include="shaders\bulb.vert" />
     <None Include="shaders\lighting_blinn-phong.frag" />
     <None Include="shaders\lighting_blinn-phong.vert" />
-    <None Include="shaders\lighting_phong.frag" />
-    <None Include="shaders\lighting_phong.vert" />
     <None Include="shaders\shadow.frag" />
     <None Include="shaders\shadow.vert" />
     <None Include="shaders\skybox.frag" />
