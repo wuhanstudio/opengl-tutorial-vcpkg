@@ -12,7 +12,7 @@
   * [09 Hello Shadow](#09-hello-shadow)
   * [10 Hello ImGUI](#10-hello-imgui)
 
-
+![](docs/demo.gif)
 
 # Modern OpenGL Tutorial
 
@@ -739,7 +739,67 @@ $ cmake --build build
 $ ./build/hello-imgui
 ```
 
+![](docs/hello-imgui.gif)
 
+First, we set up the ImGUI context:
+
+```
+// Setup Dear ImGui context
+IMGUI_CHECKVERSION();
+ImGui::CreateContext();
+ImGuiIO& io = ImGui::GetIO(); (void)io;
+io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+
+// Setup Dear ImGui style
+ImGui::StyleColorsDark();
+//ImGui::StyleColorsLight();
+
+// Setup Platform/Renderer backends
+ImGui_ImplGlfw_InitForOpenGL(gWindow, true);
+ImGui_ImplOpenGL3_Init(glsl_version);
+```
+
+Then, we draw the frame:
+
+```
+// Start the Dear ImGui frame
+ImGui_ImplOpenGL3_NewFrame();
+ImGui_ImplGlfw_NewFrame();
+ImGui::NewFrame();
+
+{
+    ImGui::Begin("Hello, ImGUI!");
+  
+    ImGui::Text("Choose the light type.");
+    ImGui::RadioButton("Point Light", reinterpret_cast<int*>(&lightType), 0);
+    ImGui::SameLine();
+    ImGui::RadioButton("Spot Light", reinterpret_cast<int*>(&lightType), 1);
+
+    ImGui::Checkbox("Demo Window", &show_demo_window); 
+    ImGui::Checkbox("Another Window", &show_another_window);
+
+    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+    ImGui::End();
+}
+```
+
+Don't forget to handle mouth events:
+
+```
+// Rendering
+ImGui::Render();
+int display_w, display_h;
+glfwGetFramebufferSize(gWindow, &display_w, &display_h);
+
+io.MouseDrawCursor = true;
+if (draging && (!io.WantCaptureMouse) ) {
+    glfwSetInputMode(gWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+    io.MouseDrawCursor = false;
+    update(deltaTime);
+}
+```
 
 
 
