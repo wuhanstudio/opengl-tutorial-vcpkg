@@ -10,7 +10,8 @@
 // are completed 3 separate times.  This can be optimized to be calculated
 // only once with attenuation and spotlight multipliers applied.
 //-----------------------------------------------------------------------------
-#version 330 core
+#version 300 es
+precision mediump float;
 
 struct Material 
 {

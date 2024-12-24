@@ -4,7 +4,8 @@
 //
 // Fragment shader for Blinn-Phong lighting with materials
 //-----------------------------------------------------------------------------
-#version 330 core
+#version 300 es
+precision mediump float;
 
 struct Material 
 {

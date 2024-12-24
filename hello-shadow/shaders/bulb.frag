@@ -4,7 +4,8 @@
 //
 // Fragment shader for light bulb mesh
 //-----------------------------------------------------------------------------
-#version 330 core
+#version 300 es
+precision mediump float;
 
 uniform vec3 lightColor;
 

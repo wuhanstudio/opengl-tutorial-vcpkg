@@ -11,8 +11,8 @@ GLFWwindow* gWindow = NULL;
 const char* APP_TITLE = "Introduction to Modern OpenGL - Hello OpenGL";
 
 // Window dimensions
-const int gWindowWidth = 800;
-const int gWindowHeight = 600;
+const int gWindowWidth = 400;
+const int gWindowHeight = 300;
 
 // Fullscreen dimensions
 const int gWindowWidthFull = 1920;
@@ -31,8 +31,9 @@ int main() {
 
 	// Set the OpenGL version
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+	// glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
 
 	// Create a window
 	if (FULLSCREEN)

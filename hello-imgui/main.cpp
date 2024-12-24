@@ -35,7 +35,7 @@ enum LightType
 
 LightType lightType = SPOT_LIGHT;
 
-const char* glsl_version = "#version 150";
+const char* glsl_version = "#version 300 es";
 
 // Set to true to enable fullscreen
 bool FULLSCREEN = false;
@@ -44,8 +44,8 @@ GLFWwindow* gWindow = NULL;
 const char* APP_TITLE = "Introduction to Modern OpenGL - Hello ImGUI";
 
 // Window dimensions
-int gWindowWidth = 800;
-int gWindowHeight = 600;
+int gWindowWidth = 400;
+int gWindowHeight = 300;
 
 // Fullscreen dimensions
 int gWindowWidthFull = 1920;
@@ -538,8 +538,9 @@ bool initOpenGL()
 	}
 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+	// glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);	// forward compatible with newer versions of OpenGL as they become available but not backward compatible (it will not run on devices that do not support OpenGL 3.3
 
 	// Create a window

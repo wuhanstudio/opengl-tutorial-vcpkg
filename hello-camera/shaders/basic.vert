@@ -4,7 +4,8 @@
 //
 // Vertex shader
 //-----------------------------------------------------------------------------
-#version 330 core
+#version 300 es
+precision mediump float;
 
 layout (location = 0) in vec3 pos;  // in local coords
 layout (location = 1) in vec2 texCoord;

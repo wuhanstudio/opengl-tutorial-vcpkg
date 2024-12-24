@@ -4,7 +4,8 @@
 //
 // Fragment shader
 //-----------------------------------------------------------------------------
-#version 330 core
+#version 300 es
+precision mediump float;
 
 uniform vec4 vertColor;
 out vec4 frag_color;

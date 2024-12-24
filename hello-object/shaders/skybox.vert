@@ -1,6 +1,9 @@
-#version 330 core
+#version 300 es  
+precision mediump float;
+
 layout (location = 0) in vec3 pos;
 
+precision mediump float;
 uniform mat4 view;
 uniform mat4 projection;
 

@@ -1,3 +1,4 @@
+> This branch is for Raspberry Pi 4 / 5
 <!-- TOC start (generated with https://github.com/derlin/bitdowntoc) -->
 - [Modern OpenGL Tutorial](#modern-opengl-tutorial)
   * [Install vcpkg](#install-vcpkg)
@@ -48,6 +49,25 @@ For raspberry pi:
 $ export VCPKG_FORCE_SYSTEM_BINARIES=1
 $ echo 'export VCPKG_FORCE_SYSTEM_BINARIES=1' >> ~/.bashrc
 $ source ~/.bashrc
+```
+
+Use OpenGL ES 3.0:
+
+```
+glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+
+// glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
+
+glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+```
+
+For vertex and fragment shaders:
+
+```
+#version 300 es
+precision mediump float;
 ```
 
 ## Create new projects

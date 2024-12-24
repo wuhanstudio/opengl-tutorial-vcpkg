@@ -4,7 +4,8 @@
 //
 // Fragment shader for Blinn-Phong lighting
 //-----------------------------------------------------------------------------
-#version 330 core
+#version 300 es
+precision mediump float;
 
 in vec2 TexCoord;
 in vec3 FragPos;

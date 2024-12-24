@@ -4,7 +4,8 @@
 //
 // Fragment shader for point light
 //-----------------------------------------------------------------------------
-#version 330 core
+#version 300 es
+precision mediump float;
 
 struct Material 
 {

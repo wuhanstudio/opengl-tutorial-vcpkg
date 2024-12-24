@@ -11,8 +11,8 @@ GLFWwindow* gWindow = NULL;
 const char* APP_TITLE = "Introduction to Modern OpenGL - Hello Triangle";
 
 // Window dimensions
-const int gWindowWidth = 800;
-const int gWindowHeight = 600;
+const int gWindowWidth = 400;
+const int gWindowHeight = 300;
 
 // Fullscreen dimensions
 const int gWindowWidthFull = 1920;
@@ -29,7 +29,8 @@ static void glfw_onKey(GLFWwindow* window, int key, int scancode, int action, in
 static void showFPS(GLFWwindow* window);
 
 // Vertex Shader source code
-const char* vertexShaderSource = "#version 330 core\n"
+const char* vertexShaderSource = "#version 300 es\n"
+"precision mediump float;\n"
 "layout (location = 0) in vec3 aPos;\n"
 "void main()\n"
 "{\n"
@@ -37,7 +38,8 @@ const char* vertexShaderSource = "#version 330 core\n"
 "}\0";
 
 //Fragment Shader sou\rce code
-const char* fragmentShaderSource = "#version 330 core\n"
+const char* fragmentShaderSource = "#version 300 es\n"
+"precision mediump float;\n"
 "out vec4 FragColor;\n"
 "void main()\n"
 "{\n"
@@ -50,8 +52,9 @@ int main() {
 
 	// Set the OpenGL version
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+	// glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
 
 	// Triangle vertices
 	GLfloat vertices[] = {
