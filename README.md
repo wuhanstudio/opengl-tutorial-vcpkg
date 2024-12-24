@@ -31,6 +31,7 @@ The source code is based on [Learn OpenGL](https://learnopengl.com/Getting-start
 ```
 $ sudo apt install build-essential pkg-config cmake curl zip unzip tar
 $ sudo apt install libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev
+$ sudo apt install libxrandr-dev libxi-dev
 
 $ git clone https://github.com/microsoft/vcpkg.git
 $ cd vcpkg
