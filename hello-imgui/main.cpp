@@ -37,7 +37,7 @@ LightType lightType = SPOT_LIGHT;
 
 const char* glsl_version = "#version 150";
 
-// // Set to true to enable fullscreen
+// Set to true to enable fullscreen
 bool FULLSCREEN = false;
 
 GLFWwindow* gWindow = NULL;
