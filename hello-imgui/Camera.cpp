@@ -75,6 +75,8 @@ FPSCamera::FPSCamera(glm::vec3 position, float yaw, float pitch)
 	mPosition = position;
 	mYaw = glm::radians(yaw);
 	mPitch = glm::radians(pitch);
+
+	updateCameraVectors();
 }
 
 //-----------------------------------------------------------------------------
@@ -92,6 +94,8 @@ FPSCamera::FPSCamera(glm::vec3 position, glm::vec3 target)
 	// Now Calculate the pitch and yaw from the target look vector.  (radians)
 	mPitch = -atan2(lookDir.y, sqrt(lookDir.x * lookDir.x + lookDir.z * lookDir.z));
 	mYaw = atan2(lookDir.x, lookDir.z) + glm::pi<float>();
+
+	updateCameraVectors();
 }
 
 //-----------------------------------------------------------------------------

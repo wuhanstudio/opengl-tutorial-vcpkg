@@ -33,14 +33,42 @@ struct SpotLight
 in vec2 TexCoord;
 in vec3 FragPos;
 in vec3 Normal;
+in vec4 FragPosLightSpace;
 
 uniform SpotLight spotLight;
 uniform Material material;
 uniform vec3 viewPos;
 
+uniform sampler2D texture_map;
+uniform sampler2D shadowMap;
+
 out vec4 frag_color;
 
 vec3 calcSpotLight();
+
+float ShadowCalculation(vec4 fragPosLightSpace)
+{
+    // perform perspective divide
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+
+    // transform to [0,1] range
+    projCoords = projCoords * 0.5 + 0.5;
+
+    // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
+    float closestDepth = texture(shadowMap, projCoords.xy).r; 
+    
+    // get depth of current fragment from light's perspective
+    float currentDepth = projCoords.z;
+    
+    // check whether current frag pos is in shadow
+    float bias = 0.005;
+    float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0;
+
+    if(projCoords.z > 1.0)
+        shadow = 0.0;
+
+    return shadow;
+}
 
 void main()
 {
@@ -53,7 +81,12 @@ void main()
 	if (spotLight.on == 1)
 		spotColor = calcSpotLight();
 
-	frag_color = vec4(ambient + spotColor, 1.0f);
+    // calculate shadow
+    float shadow = ShadowCalculation(FragPosLightSpace);  
+    vec3 color = texture(texture_map, TexCoord).rgb;
+    vec3 lighting = (ambient + (1.0 - shadow) * spotColor) * color;    
+
+    frag_color = vec4(lighting, 1.0);
 }; 
 
 //--------------------------------------------------------------

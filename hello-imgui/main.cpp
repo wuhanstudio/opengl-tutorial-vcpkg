@@ -27,6 +27,14 @@
 #include "Mesh.h"
 #include "Skybox.h"
 
+enum LightType
+{
+	POINT_LIGHT,
+	SPOT_LIGHT
+};
+
+LightType lightType = SPOT_LIGHT;
+
 const char* glsl_version = "#version 150";
 
 // // Set to true to enable fullscreen
@@ -44,6 +52,7 @@ const int gWindowWidthFull = 1920;
 const int gWindowHeightFull = 1200;
 
 bool gWireframe = false;
+bool gFlashlightOn = true;
 
 // Camera orientation
 double lastMouseX, lastMouseY;
@@ -52,7 +61,7 @@ double lastTime = glfwGetTime();
 double deltaTime = 0.0;
 bool draging = false;
 
-FPSCamera fpsCamera(glm::vec3(0.0f, 5.0f, 20.0f), -180, -10);
+FPSCamera fpsCamera(glm::vec3(0.0f, 5.0f, 10.0f), -180, -10);
 const double ZOOM_SENSITIVITY = -3.0;
 const float MOVE_SPEED = 5.0; // units per second
 const float MOUSE_SENSITIVITY = 0.1f;
@@ -97,8 +106,10 @@ int main()
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
 	// Load meshes and textures
-	ShaderProgram shaderProgram;
-	shaderProgram.loadShaders("shaders/lighting_phong_materials.vert", "shaders/lighting_phong_materials.frag");
+	ShaderProgram spotLightShader;
+	ShaderProgram pointLightShader;
+	pointLightShader.loadShaders("shaders/lighting_phong_materials.vert", "shaders/lighting_phong_materials.frag");
+	spotLightShader.loadShaders("shaders/lighting_spot.vert", "shaders/lighting_spot.frag");
 
 	// Light shader
 	ShaderProgram lightShader;
@@ -225,22 +236,20 @@ int main()
 
 		// 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
 		{
-			static float f = 0.0f;
-			static int counter = 0;
+			ImGui::Begin("Hello, ImGUI!");                          // Create a window called "Hello, world!" and append into it.
 
-			ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+			ImGui::Text("Choose the light type.");               // Display some text (you can use a format strings too)
+            ImGui::RadioButton("Point Light", reinterpret_cast<int*>(&lightType), 0); ImGui::SameLine();
+            ImGui::RadioButton("Spot Light", reinterpret_cast<int*>(&lightType), 1);
 
-			ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
 			ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
 			ImGui::Checkbox("Another Window", &show_another_window);
 
-			ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-			ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+			//static float f = 0.0f;
+			//static int counter = 0;
 
-			if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-				counter++;
-			ImGui::SameLine();
-			ImGui::Text("counter = %d", counter);
+			//ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+			//ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
 
 			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
 			ImGui::End();
@@ -286,21 +295,33 @@ int main()
 		viewPos.y = fpsCamera.getPosition().y;
 		viewPos.z = fpsCamera.getPosition().z;
 
-		// The Light
 		glm::vec3 lightPos(0.0f, 5.0f, 10.0f);
-		glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
-
-		// Move the light
-		angle += (float)deltaLightTime * 50.0f;
-		lightPos.x = 8.0f * sinf(glm::radians(angle));  // slide back and forth
+		glm::mat4 lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
 
 		// 1. render depth of scene to texture (from light's perspective)
-		glm::mat4 lightProjection, lightView;
-		glm::mat4 lightSpaceMatrix;
 		float near_plane = 1.0f, far_plane = 30.0f;
-		lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
-		lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
-		lightSpaceMatrix = lightProjection * lightView;
+		glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+
+		if (LightType::POINT_LIGHT == lightType)
+		{
+			// Pint Light
+			lightPos = glm::vec3(0.0f, 5.0f, 10.0f);
+
+			// Move the light
+			angle += (float)deltaLightTime * 50.0f;
+			lightPos.x = 8.0f * sinf(glm::radians(angle));  // slide back and forth
+			lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+
+		}
+		else if (LightType::SPOT_LIGHT == lightType)
+		{
+			// Spot Light
+			lightPos = fpsCamera.getPosition();
+			lightView = fpsCamera.getViewMatrix();
+		}
+
+		glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
+		glm::mat4 lightSpaceMatrix = lightProjection * lightView;
 
 		// Render the scene to the depth buffer (shadow map)
 		shadowShader.use();
@@ -321,14 +342,17 @@ int main()
 			texture[i].unbind(0);
 		}
 
-		// Render the light bulb geometry
-		model = glm::translate(glm::mat4(1.0), lightPos);
-		lightShader.use();
-		lightShader.setUniform("lightColor", lightColor);
-		lightShader.setUniform("model", model);
-		lightShader.setUniform("view", view);
-		lightShader.setUniform("projection", projection);
-		lightMesh.draw();
+		if (LightType::POINT_LIGHT == lightType)
+		{
+			// Render the light bulb geometry
+			model = glm::translate(glm::mat4(1.0), lightPos);
+			lightShader.use();
+			lightShader.setUniform("lightColor", lightColor);
+			lightShader.setUniform("model", model);
+			lightShader.setUniform("view", view);
+			lightShader.setUniform("projection", projection);
+			lightMesh.draw();
+		}
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -341,53 +365,100 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Render the scene
-		// Must be called BEFORE setting uniforms because setting uniforms is done
-		// on the currently active shader program.
-		shaderProgram.use();
+		if (LightType::POINT_LIGHT == lightType)
+		{
+			pointLightShader.use();
 
-		// Simple light
-		shaderProgram.setUniform("view", view);
-		shaderProgram.setUniform("projection", projection);
-		shaderProgram.setUniform("viewPos", viewPos);
+			// Point light
+			pointLightShader.setUniform("view", view);
+			pointLightShader.setUniform("projection", projection);
+			pointLightShader.setUniform("viewPos", viewPos);
 
-		shaderProgram.setUniform("light.position", lightPos);
-		shaderProgram.setUniform("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
-		shaderProgram.setUniform("light.diffuse", lightColor);
-		shaderProgram.setUniform("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+			pointLightShader.setUniform("light.position", lightPos);
+			pointLightShader.setUniform("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+			pointLightShader.setUniform("light.diffuse", lightColor);
+			pointLightShader.setUniform("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+		
+			pointLightShader.setUniform("lightSpaceMatrix", lightSpaceMatrix);
 
-		shaderProgram.setUniform("lightSpaceMatrix", lightSpaceMatrix);
+		}
+		else if (LightType::SPOT_LIGHT == lightType)
+		{
+			spotLightShader.use();
+
+			// Spot light
+			glm::vec3 spotlightPos = fpsCamera.getPosition();
+			spotlightPos.y -= 0.5f;
+
+			spotLightShader.setUniform("view", view);
+			spotLightShader.setUniform("projection", projection);
+			spotLightShader.setUniform("viewPos", viewPos);
+
+			spotLightShader.setUniform("spotLight.ambient", glm::vec3(0.4f, 0.4f, 0.4f));
+			spotLightShader.setUniform("spotLight.diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
+			spotLightShader.setUniform("spotLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+			spotLightShader.setUniform("spotLight.position", spotlightPos);
+			spotLightShader.setUniform("spotLight.direction", fpsCamera.getLook());
+			spotLightShader.setUniform("spotLight.cosInnerCone", glm::cos(glm::radians(15.0f)));
+			spotLightShader.setUniform("spotLight.cosOuterCone", glm::cos(glm::radians(20.0f)));
+			spotLightShader.setUniform("spotLight.constant", 1.0f);
+			spotLightShader.setUniform("spotLight.linear", 0.07f);
+			spotLightShader.setUniform("spotLight.exponent", 0.017f);
+			spotLightShader.setUniform("spotLight.on", gFlashlightOn);
+
+			spotLightShader.setUniform("lightSpaceMatrix", lightSpaceMatrix);
+		}
+
 
 		// Render the scene
 		for (int i = 0; i < numModels; i++)
 		{
 			model = glm::translate(glm::mat4(1.0), modelPos[i]) * glm::scale(glm::mat4(1.0), modelScale[i]);
-			shaderProgram.setUniform("model", model);
+			
+			if (LightType::POINT_LIGHT == lightType)
+			{
+				pointLightShader.setUniform("model", model);
 
-			// Set material properties
-			shaderProgram.setUniform("material.ambient", glm::vec3(0.1f, 0.1f, 0.1f));
-			shaderProgram.setUniformSampler("material.diffuseMap", 0);
-			shaderProgram.setUniform("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
-			shaderProgram.setUniform("material.shininess", 32.0f);
+				// Set material properties
+				pointLightShader.setUniform("material.ambient", glm::vec3(1.0f, 1.0f, 1.0f));
+				pointLightShader.setUniformSampler("material.diffuseMap", 0);
+				pointLightShader.setUniform("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+				pointLightShader.setUniform("material.shininess", 32.0f);
+			}
+			else if (LightType::SPOT_LIGHT == lightType)
+			{
+				spotLightShader.setUniform("model", model);
 
+				// Set material properties
+				spotLightShader.setUniform("material.ambient", glm::vec3(1.0f, 1.0f, 1.0f));
+				spotLightShader.setUniformSampler("material.diffuseMap", 0);
+				spotLightShader.setUniform("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+				spotLightShader.setUniform("material.shininess", 32.0f);
+			}
 			texture[i].bind(0);		// set the texture before drawing.
 
 			// Render the shadow
 			glActiveTexture(GL_TEXTURE0 + 2);
 			glBindTexture(GL_TEXTURE_2D, depthMap);
-			shaderProgram.setUniform("shadowMap", 2);
+
+			pointLightShader.setUniform("shadowMap", 2);
+			spotLightShader.setUniform("shadowMap", 2);
 
 			mesh[i].draw();			// Render the OBJ mesh
 			texture[i].unbind(0);
 		}
 
-		// Render the light bulb geometry
-		model = glm::translate(glm::mat4(1.0), lightPos);
-		lightShader.use();
-		lightShader.setUniform("lightColor", lightColor);
-		lightShader.setUniform("model", model);
-		lightShader.setUniform("view", view);
-		lightShader.setUniform("projection", projection);
-		lightMesh.draw();
+		if (LightType::POINT_LIGHT == lightType)
+		{
+			// Render the light bulb geometry
+			model = glm::translate(glm::mat4(1.0), lightPos);
+			lightShader.use();
+			lightShader.setUniform("lightColor", lightColor);
+			lightShader.setUniform("model", model);
+			lightShader.setUniform("view", view);
+			lightShader.setUniform("projection", projection);
+			lightMesh.draw();
+		}
 
 		skybox.render(skyboxShader, view, projection);
 
@@ -414,7 +485,8 @@ int main()
 	mesh[5].destroy();
 	lightMesh.destroy();
 
-	shaderProgram.destroy();
+	pointLightShader.destroy();
+	spotLightShader.destroy();
 	shadowShader.destroy();
 	skyboxShader.destroy();
 	
@@ -523,6 +595,11 @@ void glfw_onKey(GLFWwindow* window, int key, int scancode, int action, int mode)
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		else
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
+
+	if (key == GLFW_KEY_2 && action == GLFW_PRESS)
+	{
+		gFlashlightOn = !gFlashlightOn;
 	}
 }
 
