@@ -42,7 +42,13 @@ $ source ~/.bashrc
 $ vcpkg integrate install
 ```
 
+For raspberry pi:
 
+```
+$ export VCPKG_FORCE_SYSTEM_BINARIES=1
+$ echo 'export VCPKG_FORCE_SYSTEM_BINARIES=1' >> ~/.bashrc
+$ source ~/.bashrc
+```
 
 ## Create new projects
 
