@@ -544,7 +544,12 @@ bool initOpenGL()
 
 	// Create a window
 	if (FULLSCREEN)
+	{
+		const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+		gWindowWidthFull = mode->width;
+		gWindowHeightFull = mode->height;
 		gWindow = glfwCreateWindow(gWindowWidthFull, gWindowHeightFull, APP_TITLE, glfwGetPrimaryMonitor(), NULL);
+	}
 	else
 		gWindow = glfwCreateWindow(gWindowWidth, gWindowHeight, APP_TITLE, NULL, NULL);
 
