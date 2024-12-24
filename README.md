@@ -1,3 +1,5 @@
+> For Raspberry Pi (OpenGL ES 3.0), check out https://github.com/wuhanstudio/opengl-tutorial-vcpkg/tree/raspi4
+
 <!-- TOC start (generated with https://github.com/derlin/bitdowntoc) -->
 - [Modern OpenGL Tutorial](#modern-opengl-tutorial)
   * [Install vcpkg](#install-vcpkg)
