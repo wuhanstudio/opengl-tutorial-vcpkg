@@ -44,12 +44,12 @@ GLFWwindow* gWindow = NULL;
 const char* APP_TITLE = "Introduction to Modern OpenGL - Hello ImGUI";
 
 // Window dimensions
-const int gWindowWidth = 800;
-const int gWindowHeight = 600;
+int gWindowWidth = 800;
+int gWindowHeight = 600;
 
 // Fullscreen dimensions
-const int gWindowWidthFull = 1920;
-const int gWindowHeightFull = 1200;
+int gWindowWidthFull = 1920;
+int gWindowHeightFull = 1200;
 
 bool gWireframe = false;
 bool gFlashlightOn = true;
@@ -375,7 +375,7 @@ int main()
 			pointLightShader.setUniform("viewPos", viewPos);
 
 			pointLightShader.setUniform("light.position", lightPos);
-			pointLightShader.setUniform("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+			pointLightShader.setUniform("light.ambient", glm::vec3(0.1f, 0.1f, 0.1f));
 			pointLightShader.setUniform("light.diffuse", lightColor);
 			pointLightShader.setUniform("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
 		
@@ -394,7 +394,7 @@ int main()
 			spotLightShader.setUniform("projection", projection);
 			spotLightShader.setUniform("viewPos", viewPos);
 
-			spotLightShader.setUniform("spotLight.ambient", glm::vec3(0.4f, 0.4f, 0.4f));
+			spotLightShader.setUniform("spotLight.ambient", glm::vec3(0.1f, 0.1f, 0.1f));
 			spotLightShader.setUniform("spotLight.diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
 			spotLightShader.setUniform("spotLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
 			spotLightShader.setUniform("spotLight.position", spotlightPos);
@@ -608,7 +608,9 @@ void glfw_onKey(GLFWwindow* window, int key, int scancode, int action, int mode)
 //-----------------------------------------------------------------------------
 void glfw_onFramebufferSize(GLFWwindow* window, int width, int height)
 {
-	glViewport(0, 0, width, height);
+	gWindowWidth = width;
+	gWindowHeight = height;
+	glViewport(0, 0, gWindowWidth, gWindowHeight);
 }
 
 //-----------------------------------------------------------------------------

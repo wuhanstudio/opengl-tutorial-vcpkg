@@ -29,12 +29,12 @@ GLFWwindow* gWindow = NULL;
 const char* APP_TITLE = "Introduction to Modern OpenGL - Hello Lighting";
 
 // Window dimensions
-const int gWindowWidth = 800;
-const int gWindowHeight = 600;
+int gWindowWidth = 800;
+int gWindowHeight = 600;
 
 // Fullscreen dimensions
-const int gWindowWidthFull = 1920;
-const int gWindowHeightFull = 1200;
+int gWindowWidthFull = 1920;
+int gWindowHeightFull = 1200;
 
 bool gWireframe = false;
 
@@ -401,7 +401,9 @@ void glfw_onKey(GLFWwindow* window, int key, int scancode, int action, int mode)
 //-----------------------------------------------------------------------------
 void glfw_onFramebufferSize(GLFWwindow* window, int width, int height)
 {
-	glViewport(0, 0, width, height);
+	gWindowWidth = width;
+	gWindowHeight = height;
+	glViewport(0, 0, gWindowWidth, gWindowHeight);
 }
 
 //-----------------------------------------------------------------------------
